@@ -1,0 +1,13 @@
+# 本地环境与打包产物
+.workbuddy/
+_repo/
+_shots/
+_pkg/
+_verify/
+_prof*/
+*.zip
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
