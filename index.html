@@ -1,18 +1,162 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>砍价 · 酒店询价 Demo</title>
-<meta http-equiv="refresh" content="0; url=hotel-inquiry-demo.html">
-<style>
-  body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
-       background:#F6F1E8;color:#2B2521;
-       font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
-  a{color:#BC5F35}
-</style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>砍价 · 到店消费询价</title>
+<link rel="stylesheet" href="app.css" />
 </head>
 <body>
-  <p>正在打开 <a href="hotel-inquiry-demo.html">砍价 · 酒店询价 Demo</a>…</p>
+
+<div class="device">
+  <section class="phone">
+    <div class="island"></div>
+
+    <div class="statusbar">
+      <span id="clock">13:11</span>
+      <span class="sb-r">
+        <span class="sb-bar"><i></i><i></i><i></i><i></i></span>
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 9.4a1 1 0 100-2 1 1 0 000 2z" fill="#2B2521"/><path d="M3.6 6.1a5.6 5.6 0 017.8 0" stroke="#2B2521" stroke-width="1.3" stroke-linecap="round"/><path d="M1.2 3.6a9 9 0 0112.6 0" stroke="#2B2521" stroke-width="1.3" stroke-linecap="round" opacity=".85"/></svg>
+        <span class="sb-batt"></span>
+      </span>
+    </div>
+
+    <div class="viewport">
+
+      <!-- ① 首页（按品类渲染） -->
+      <div class="screen active" id="s1"><div class="body" id="homeBody"></div></div>
+
+      <!-- ② 确认询价单 -->
+      <div class="screen" id="s2">
+        <div class="nav">
+          <button class="nav-back" data-go="s1" data-dir="-1">‹</button>
+          <div class="nav-t">确认询价单</div>
+          <div class="nav-r"><b>1</b>/2</div>
+        </div>
+        <div class="body" id="confirmBody"></div>
+        <div class="footer">
+          <button class="btn btn-primary" id="btnToNeeds">下一步：确认需求</button>
+        </div>
+      </div>
+
+      <!-- ③ 确认需求 -->
+      <div class="screen" id="s3">
+        <div class="nav">
+          <button class="nav-back" data-go="s2" data-dir="-1">‹</button>
+          <div class="nav-t">确认需求</div>
+          <div class="nav-r"><b>2</b>/2</div>
+        </div>
+        <div class="body" id="needsBody"></div>
+        <div class="footer">
+          <button class="btn btn-primary" id="btnStart" disabled>开始询价</button>
+          <p class="foot-note" id="startNote">填写姓名和手机号后即可开始询价</p>
+        </div>
+      </div>
+
+      <!-- ④ 沟通进度 -->
+      <div class="screen" id="s4">
+        <div class="nav">
+          <div class="nav-t">询价进行中</div>
+          <div class="nav-r" id="progPct">1/5</div>
+        </div>
+        <div class="body">
+          <div class="prog-head">
+            <div class="prog-name" id="progName"></div>
+            <div class="prog-sub"><span id="progTel"></span>
+              <span class="wave" id="liveWave"><i></i><i></i><i></i><i></i><i></i></span>
+            </div>
+          </div>
+          <div class="callbar">
+            <div class="callbar-l"><span class="live" id="liveDot"></span><span id="callStatus">正在整理需求…</span></div>
+            <div class="callbar-r" id="callMeta">待发起</div>
+          </div>
+          <div class="steps" id="steps"></div>
+          <div class="prog-foot">
+            <div class="pf-l"><span class="pf-dot"></span>商家原话会完整保留，可展开任一步查看</div>
+            <div class="pf-r">预计 1–2 分钟</div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="fr-row">
+            <button class="btn btn-ghost btn-sm" id="btnWait" style="flex:1">等会来看</button>
+            <button class="btn btn-primary btn-sm" id="btnNotify" style="flex:1">有结果了通知我</button>
+          </div>
+          <button class="cancel-link" id="btnCancel">取消询价</button>
+        </div>
+      </div>
+
+      <!-- ⑤ 结果 -->
+      <div class="screen" id="s5">
+        <div class="nav">
+          <button class="nav-back" data-go="s6" data-dir="1">‹</button>
+          <div class="nav-t">询价结果</div>
+          <div class="nav-r" id="resTime"></div>
+        </div>
+        <div class="body" id="resultBody"></div>
+        <div class="footer" id="resultFooter"></div>
+      </div>
+
+      <!-- ⑥ 砍价记录 -->
+      <div class="screen" id="s6"><div class="body" id="recBody"></div></div>
+
+      <!-- ⑦ 休闲娱乐 · 品类列表 -->
+      <div class="screen" id="s7"><div class="body" id="catBody"></div></div>
+
+      <!-- 通知条 -->
+      <div class="push" id="push">
+        <div class="push-ic">砍</div>
+        <div class="push-main">
+          <div class="push-t">询价有结果了</div>
+          <div class="push-s" id="pushS"></div>
+        </div>
+        <div class="push-go">›</div>
+      </div>
+
+      <!-- tab bar -->
+      <div class="tabbar" id="tabbar">
+        <button class="tab on" data-tab="s1">
+          <svg viewBox="0 0 24 24"><path d="M3.5 18.5v-9h17v9"/><path d="M3.5 13.5h17"/><path d="M6.5 13.5v-3a1.5 1.5 0 011.5-1.5h8a1.5 1.5 0 011.5 1.5v3"/><path d="M2.5 18.5h19"/></svg>
+          <span>酒店民宿</span>
+        </button>
+        <button class="tab" data-tab="s7">
+          <svg viewBox="0 0 24 24"><path d="M12 3.2l2.2 5.1 5.5.5-4.2 3.6 1.3 5.4-4.8-2.9-4.8 2.9 1.3-5.4-4.2-3.6 5.5-.5z"/></svg>
+          <span>休闲娱乐</span>
+        </button>
+        <button class="tab" data-tab="s6">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 1.9"/></svg>
+          <span>砍价记录</span>
+        </button>
+      </div>
+
+    </div>
+    <div class="homebar"><span></span></div>
+  </section>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" style="display:none" />
+
+<div class="ctrl">
+  <span class="lab">演示场景</span>
+  <button data-scn="win" class="on">议价成功</button>
+  <button data-scn="none">商家无优惠</button>
+  <button data-scn="fail">未接通</button>
+  <span class="sep"></span>
+  <button id="btnSkip">跳到结果</button>
+  <button id="btnReset">从头开始</button>
+</div>
+
+<div class="sheet-wrap" id="sheetWrap">
+  <div class="sheet">
+    <div class="sheet-h">
+      <div class="st" id="sheetTitle">沟通记录<small id="sheetSub"></small></div>
+      <button class="sheet-x" id="sheetClose">×</button>
+    </div>
+    <div class="sheet-b" id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
 </body>
 </html>
