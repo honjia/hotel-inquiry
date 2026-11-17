@@ -29,7 +29,7 @@
     hotel: {
       id: "hotel", name: "酒店民宿", short: "酒店",
       store: "秋果酒店（北京三里屯太古里团结湖地铁站店）",
-      unit: "1 间夜", price: 661, list: 966, ratio: 0.908,
+      unit: "1 间夜", price: 661, list: 966, ratio: 0.85,
       merchant: "前台", tel: "010-8532 6688",
       sample: "samples/shot-price.jpg",
       uploadTitle: "上传酒店报价截图",
@@ -62,7 +62,7 @@
       id: "ktv", name: "KTV", short: "门店",
       sub: "包厢 · 时段",
       store: "星聚会 KTV（三里屯店）",
-      unit: "4 小时", price: 1480, list: 1880, ratio: 0.797,
+      unit: "4 小时", price: 1480, list: 1880, ratio: 0.85,
       merchant: "前台", tel: "010-6416 8866",
       uploadTitle: "上传 KTV 团购截图",
       uploadSub: "团购页 / 套餐详情 / 门店聊天报价",
@@ -94,7 +94,7 @@
       id: "massage", name: "按摩足疗", short: "门店",
       sub: "项目 · 人次",
       store: "足间道 · 足疗（国贸店）",
-      unit: "2 人次", price: 796, list: 916, ratio: 0.899,
+      unit: "2 人次", price: 796, list: 916, ratio: 0.85,
       merchant: "门店", tel: "010-5900 2233",
       uploadTitle: "上传按摩足疗团购截图",
       uploadSub: "团购页 / 项目详情 / 门店聊天报价",
@@ -126,7 +126,7 @@
       id: "bar", name: "酒吧", short: "订台",
       sub: "卡座 · 低消",
       store: "OLD LIVE 酒馆（三里屯店）",
-      unit: "1 卡座", price: 3000, list: 3600, ratio: 0.8,
+      unit: "1 卡座", price: 3000, list: 3600, ratio: 0.85,
       merchant: "订台", tel: "010-6417 5522",
       uploadTitle: "上传酒吧卡座报价截图",
       uploadSub: "订台页 / 套餐详情 / 销售聊天报价",
@@ -158,7 +158,7 @@
       id: "gym", name: "健身房", short: "会籍",
       sub: "卡种 · 有效期",
       store: "超级猩猩（国贸店）",
-      unit: "12 次", price: 2388, list: 2988, ratio: 0.829,
+      unit: "12 次", price: 2388, list: 2988, ratio: 0.85,
       merchant: "会籍顾问", tel: "010-8532 1177",
       uploadTitle: "上传健身卡报价截图",
       uploadSub: "会员页 / 卡种详情 / 顾问聊天报价",
@@ -186,75 +186,11 @@
       labels: { quote: "门店报价", benefit: "卡种与权益", rule: "有效期" }
     },
 
-    escape: {
-      id: "escape", name: "密室逃脱", short: "门店",
-      sub: "主题 · 场次",
-      store: "X 空间密室（朝阳大悦城店）",
-      unit: "6 人场", price: 828, list: 996, ratio: 0.843,
-      merchant: "门店", tel: "010-8552 6600",
-      uploadTitle: "上传密室团购截图",
-      uploadSub: "团购页 / 主题详情 / 门店聊天报价",
-      hints: ["门店全称与分店", "主题名与人数", "场次时间，含不含 NPC", "能否改期、超时规则"],
-      fields: [
-        { l: "主题", v: "《深海》" },
-        { l: "人数", v: "6 人" },
-        { l: "场次", v: "周六 19:00" },
-        { l: "NPC", v: "含 1 位 NPC" },
-        { l: "已含权益", v: "含换装 · 提前 15 分钟到店" }
-      ],
-      missing: ["能否改期", "超时规则"],
-      needs: ["含 NPC", "可换装", "可改期一次", "加 1 人"],
-      needsDefault: ["含 NPC", "可换装"],
-      ask: "六个人玩《深海》，要带 NPC，问能不能给个整场价",
-      ava: "周六 19:00 还有场",
-      step2: "NPC 是这个主题自带的，换装也含",
-      winBenefit: "含 1 位 NPC · 含换装",
-      winTail: "另外免了加人费用",
-      winExtra: "加 1 人不加价",
-      rule: "提前 15 分钟到店，可改期一次",
-      noneReason: "周六场次紧，价格不动",
-      noneBenefit: "含 NPC · 含换装 · 6 人场",
-      noneFree: ["可改期一次", "加 1 人不加价"],
-      labels: { quote: "场次报价", benefit: "主题与含项", rule: "到场规则" }
-    },
-
-    script: {
-      id: "script", name: "剧本杀", short: "客服",
-      sub: "本子 · 场次",
-      store: "迷雾剧场（三里屯店）",
-      unit: "6 人场", price: 768, list: 918, ratio: 0.859,
-      merchant: "客服", tel: "010-6416 3300",
-      uploadTitle: "上传剧本杀团购截图",
-      uploadSub: "团购页 / 本子详情 / 客服聊天报价",
-      hints: ["门店全称与分店", "本子名与人数", "场次时间、DM 等级", "能否开小场、超时费用"],
-      fields: [
-        { l: "本子", v: "《雾山》硬核推理" },
-        { l: "人数", v: "6 人" },
-        { l: "场次", v: "周六 18:00" },
-        { l: "主持 DM", v: "阿哲（金牌）" },
-        { l: "已含权益", v: "含茶水 · 可自带零食" }
-      ],
-      missing: ["能否开小场", "超时费用"],
-      needs: ["金牌 DM", "含茶水", "可自带零食", "可延时到 24:00"],
-      needsDefault: ["金牌 DM", "含茶水"],
-      ask: "六个人开《雾山》，要金牌 DM，想问能不能给个整场价",
-      ava: "周六 18:00 这场还空着",
-      step2: "阿哲那场可以给你留着，茶水是含的",
-      winBenefit: "金牌 DM · 含茶水",
-      winTail: "另外免了超时费",
-      winExtra: "超时费已免（原 ¥100/小时）",
-      rule: "5 小时一场，超时按 100/小时",
-      noneReason: "周末场次都是原价",
-      noneBenefit: "金牌 DM · 含茶水 · 5 小时",
-      noneFree: ["可延时到 24:00", "送零食拼盘"],
-      labels: { quote: "场次报价", benefit: "本子与含项", rule: "开场规则" }
-    },
-
     sauna: {
       id: "sauna", name: "洗浴桑拿", short: "前台",
       sub: "门票 · 人次",
       store: "汤泉良子（望京店）",
-      unit: "2 人次", price: 516, list: 636, ratio: 0.888,
+      unit: "2 人次", price: 516, list: 636, ratio: 0.85,
       merchant: "前台", tel: "010-8471 9900",
       uploadTitle: "上传洗浴门票截图",
       uploadSub: "团购页 / 门票详情 / 门店聊天报价",
@@ -282,40 +218,9 @@
       labels: { quote: "门票报价", benefit: "门票与含项", rule: "入场规则" }
     },
 
-    billiard: {
-      id: "billiard", name: "台球", short: "前台",
-      sub: "台型 · 时段",
-      store: "星牌台球（工体店）",
-      unit: "2 小时 · 2 台", price: 240, list: 320, ratio: 0.833,
-      merchant: "前台", tel: "010-6552 8800",
-      uploadTitle: "上传台球计费截图",
-      uploadSub: "团购页 / 计费详情 / 前台聊天报价",
-      hints: ["门店全称与分店", "台型与台数", "时段与时长", "是否含球杆、续时价格"],
-      fields: [
-        { l: "台型", v: "中式八球台" },
-        { l: "时段", v: "周六 15:00–17:00" },
-        { l: "台数", v: "2 台" },
-        { l: "球杆", v: "含公杆" },
-        { l: "已含权益", v: "含茶水 · 可续时" }
-      ],
-      missing: ["续时价格", "能否包场"],
-      needs: ["含球杆", "含茶水", "可续时", "包场"],
-      needsDefault: ["含球杆", "含茶水"],
-      ask: "两台中式八球，周六下午两小时，想问能不能给个整场价",
-      ava: "周六下午还有台",
-      step2: "台子有，续时 60 一小时",
-      winBenefit: "2 台 × 2 小时 · 含茶水",
-      winTail: "另外送了半小时",
-      winExtra: "送半小时（价值 ¥30）",
-      rule: "周六 15:00–17:00，可续时",
-      noneReason: "周六下午台费不打折",
-      noneBenefit: "2 台 × 2 小时 · 含公杆",
-      noneFree: ["送半小时", "含茶水"],
-      labels: { quote: "台费报价", benefit: "台型与含项", rule: "使用规则" }
-    }
   };
 
-  const LEISURE = ["ktv", "massage", "bar", "gym", "escape", "script", "sauna", "billiard"];
+  const LEISURE = ["ktv", "massage", "bar", "gym", "sauna"];
 
   /* 列表页图标 */
   const ICONS = {
@@ -323,10 +228,7 @@
     massage: '<path d="M7 20.5v-4a3 3 0 0 1 3-3h1.5a3 3 0 0 0 3-3V7"/><path d="M4.5 20.5h15"/><circle cx="16" cy="5" r="2"/>',
     bar: '<path d="M5 4h14l-6 8v6"/><path d="M9.5 18h5"/><path d="M8 4l4 5"/><path d="M16 4l-4 5"/>',
     gym: '<path d="M4 9v6"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M20 9v6"/><path d="M7 12h10"/>',
-    escape: '<rect x="4.5" y="10" width="15" height="9.5" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/><circle cx="12" cy="14.6" r="1.4"/>',
-    script: '<path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H18v16H6.5A1.5 1.5 0 0 1 5 18.5z"/><path d="M9 8.5h6"/><path d="M9 12h4"/>',
     sauna: '<path d="M7 20c0-2 1.5-2.5 1.5-4.5S7 13 7 11"/><path d="M12 20c0-2 1.5-2.5 1.5-4.5S12 13 12 11"/><path d="M17 20c0-2 1.5-2.5 1.5-4.5S17 13 17 11"/><path d="M4 8h16"/>',
-    billiard: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="1.6"/>'
   };
 
   /* =========================================================
@@ -501,8 +403,15 @@
           '<span class="per">/ ' + esc(state.unit) + "</span>" +
           (state.list ? '<span class="was">原价 ' + money(state.list) + "</span>" : "") +
         "</div>" +
-        '<div style="font-size:10.5px;color:var(--muted);margin-top:9px;line-height:1.55">' +
-          "价格取自截图，点数字可改。助理会按这个总价去谈。" + "</div>" +
+        '<div class="ptarget">' +
+          '<div class="pt-l">' +
+            '<span class="pt-k">议价目标</span>' +
+            '<span class="pt-v">' + money(dealOf(state.price, c)) +
+              "<i>– " + money(state.price) + "</i></span>" +
+          "</div>" +
+          '<span class="pt-tag">按标价低 15%</span>' +
+        "</div>" +
+        '<div class="pt-note">价格取自截图，点数字可改。助理按下限为目标去谈，谈不到会如实回报实际报价。</div>' +
       "</div>" +
 
       '<div class="sec-h row-h"><span>其他条件</span><em>非必填</em></div>' +
@@ -1065,13 +974,13 @@
       { id: "seed1", cat: "ktv", store: "星聚会 KTV（三里屯店）", unit: "4 小时", price: 1480,
         meta: "中包（8–10 人） · 4 小时", scn: "win", status: "done", startedAt: 0, durationMs: 0,
         notify: false, time: "11月14日 20:12", needs: [], fields: [],
-        res: { pill: "ok", pillText: "已取得优惠", head: "直订比平台便宜 300 元，另外把开台费免了",
-               price: "1,180", old: "¥1,480", tag: "省 ¥300",
-               note: "共 4 小时 · 折合 ¥1,180，送果盘、开台费免了，商家口头锁价至今晚 20:00。",
+        res: { pill: "ok", pillText: "已取得优惠", head: "直订比平台便宜 222 元，另外把开台费免了",
+               price: "1,258", old: "¥1,480", tag: "省 ¥222",
+               note: "共 4 小时 · 总价 ¥1,258，送果盘、开台费免了，商家口头锁价至今晚 20:00。",
                rowsTitle: "包间报价与权益",
-               rows: [["包间报价", "¥1,180 / 4 小时"], ["包间与权益", "送果盘 · 开台费免了"],
+               rows: [["包间报价", "¥1,258 / 4 小时"], ["包间与权益", "送果盘 · 开台费免了"],
                       ["使用规则", "周六 20:00–24:00 可用，超时按 200/小时"],
-                      ["价格差异", "¥1,480 → ¥1,180，降 20.3%"], ["额外权益", "开台费免了"]],
+                      ["价格差异", "¥1,480 → ¥1,258，降 15%"], ["额外权益", "开台费免了"]],
                extra: null } },
       { id: "seed2", cat: "massage", store: "足间道 · 足疗（国贸店）", unit: "2 人次", price: 796,
         meta: "中式推拿 90 分钟 ×2 · 2 人次", scn: "none", status: "done", startedAt: 0, durationMs: 0,
@@ -1215,19 +1124,17 @@
   function renderCats() {
     $("#catBody").innerHTML =
       '<div class="rec-head" style="margin-bottom:6px"><h1>休闲娱乐</h1><span>选一个品类</span></div>' +
-      '<p class="lead" style="margin:0 0 14px">流程和订酒店一样：上传团购截图，助理替你问价。</p>' +
+      '<p class="lead" style="margin:0 0 14px">团购价不一定是最低的价格。传一张截图，助理替你跟门店谈一谈。</p>' +
       '<div class="catgrid">' +
       LEISURE.map(function (id) {
         const c = CATS[id];
-        const rows = c.fields.length;
         return '<div class="cat" data-cat="' + id + '">' +
           '<div class="ci"><svg viewBox="0 0 24 24">' + (ICONS[id] || "") + "</svg></div>" +
           '<div class="cn">' + c.name + "</div>" +
-          '<div class="cu"><b>' + c.sub.split(" · ")[0] + "</b> · " + rows + " 项条件</div>" +
           "</div>";
       }).join("") +
       "</div>" +
-      '<p class="home-foot" style="margin-top:22px">品类还在增加，先做了这 8 个。医美涉及医疗合规，暂不接入。</p>';
+      '<p class="home-foot" style="margin-top:22px">品类还在增加。</p>';
 
     $$("#catBody .cat").forEach(function (el) {
       el.addEventListener("click", function () {
