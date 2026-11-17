@@ -222,25 +222,31 @@
 
   const LEISURE = ["ktv", "massage", "bar", "gym", "sauna"];
 
-  /* 列表页图标 */
-  const ICONS = {
-    ktv: '<path d="M12 3.5a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0v-6a3 3 0 0 0-3-3z"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/>',
-    massage: '<path d="M7 20.5v-4a3 3 0 0 1 3-3h1.5a3 3 0 0 0 3-3V7"/><path d="M4.5 20.5h15"/><circle cx="16" cy="5" r="2"/>',
-    bar: '<path d="M5 4h14l-6 8v6"/><path d="M9.5 18h5"/><path d="M8 4l4 5"/><path d="M16 4l-4 5"/>',
-    gym: '<path d="M4 9v6"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M20 9v6"/><path d="M7 12h10"/>',
-    sauna: '<path d="M7 20c0-2 1.5-2.5 1.5-4.5S7 13 7 11"/><path d="M12 20c0-2 1.5-2.5 1.5-4.5S12 13 12 11"/><path d="M17 20c0-2 1.5-2.5 1.5-4.5S17 13 17 11"/><path d="M4 8h16"/>',
-  };
+
 
   /* =========================================================
      状态
      ========================================================= */
   let CAT = CATS.hotel;
+  let kind = "hotel";            // hotel | leisure
+
+  const CONTACT_KEY = "kanjia.contact.v1";
+  function savedContact() {
+    try {
+      const v = JSON.parse(localStorage.getItem(CONTACT_KEY) || "null");
+      return v && v.phone ? v : null;
+    } catch (e) { return null; }
+  }
+  function persistContact(c) {
+    try { localStorage.setItem(CONTACT_KEY, JSON.stringify(c)); } catch (e) {}
+  }
+
   const state = {
     scenario: "win",
     store: "", unit: "", price: 0, list: 0,
     fields: [],            // 可选字段 [{l,v}]
     needs: [],
-    contact: { name: "", phone: "" },
+    contact: savedContact() || { name: "", phone: "" },
     shotURL: null
   };
 
@@ -254,19 +260,32 @@
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
+  const LEISURE_HINTS = [
+    "门店全称与具体分店",
+    "套餐或项目名称",
+    "价格，以及按什么单位计价（人均 / 台 / 包间）",
+    "可用时段、含了哪些东西、有没有额外收费"
+  ];
+
   function renderHome() {
-    const c = CAT;
-    const leisureLabel = c.id === "hotel" ? "酒店民宿" : "休闲娱乐 · " + c.name;
+    const isLeisure = kind === "leisure";
+    const brandSub = isLeisure ? "休闲娱乐" : "酒店民宿";
+    const lead = isLeisure
+      ? "KTV、按摩、酒吧、健身、洗浴，团购价不一定是最低的价格。传一张团购截图，助理替你跟门店把价格谈一谈。"
+      : "不用自己找电话、不用重复讲需求。助理替你联系酒店、确认房型和权益、问清优惠，最后给你一张说得清的结果。";
+    const uploadTitle = isLeisure ? "上传门店报价截图" : "上传酒店报价截图";
+    const uploadSub = isLeisure ? "团购页 / 套餐详情 / 门店聊天报价" : "OTA 详情页 / 订单页 / 商家聊天报价";
+    const hints = isLeisure ? LEISURE_HINTS : CAT.hints;
+
     $("#homeBody").innerHTML =
-      '<div class="brand"><i></i><span>砍价</span><em>' + leisureLabel + "</em></div>" +
+      '<div class="brand"><i></i><span>砍价</span><em>' + brandSub + "</em></div>" +
       '<h1 class="h1">上传截图<br>剩下的交给助理去问</h1>' +
-      '<p class="lead">不用自己找电话、不用重复讲需求。助理替你联系' + (c.id === "hotel" ? "酒店" : "门店") +
-      "、确认条件和权益、问清优惠，最后给你一张说得清的结果。</p>" +
+      '<p class="lead">' + lead + "</p>" +
       '<div id="homeUpload">' +
         '<button class="upload" id="uploadBox">' +
           '<span class="ic">＋</span>' +
-          '<span class="t">' + esc(c.uploadTitle) + "</span>" +
-          '<span class="s">' + esc(c.uploadSub) + "</span>" +
+          '<span class="t">' + esc(uploadTitle) + "</span>" +
+          '<span class="s">' + esc(uploadSub) + "</span>" +
         "</button>" +
         '<button class="sample-link" id="sampleBtn"><u>用示例截图试一下</u></button>' +
       "</div>" +
@@ -279,13 +298,13 @@
       "</div>" +
       '<div class="hint-card" id="hintCard">' +
         '<div class="hint-h">标准截图需要包含</div>' +
-        "<ul class=\"hint-list\">" + c.hints.map((h) => "<li>" + h + "</li>").join("") + "</ul>" +
+        "<ul class=\"hint-list\">" + hints.map((h) => "<li>" + h + "</li>").join("") + "</ul>" +
         '<div class="hint-f">缺什么会单独让你补，助理不会替你猜条件或编权益。</div>' +
       "</div>" +
       '<p class="home-foot">截图只用于识别本次报价，不保存、不上传相册。</p>';
 
     $("#uploadBox").addEventListener("click", () => $("#fileInput").click());
-    $("#sampleBtn").addEventListener("click", () => startScan(sampleFor(c)));
+    $("#sampleBtn").addEventListener("click", () => startScan(sampleFor(CAT)));
   }
 
   /* 示例截图：酒店用真实截图，其余品类按配置生成一张团购卡 */
@@ -327,7 +346,9 @@
 
     const col = $("#fieldsCol");
     col.classList.remove("show");
-    const rows = [{ l: "店名", v: CAT.store }, { l: "询价单位", v: CAT.unit }].concat(CAT.fields.slice(0, 3));
+    const rows = (kind === "leisure" ? [{ l: "品类", v: CAT.name }] : [])
+      .concat([{ l: "店名", v: CAT.store }, { l: "询价单位", v: CAT.unit }])
+      .concat(CAT.fields.slice(0, kind === "leisure" ? 2 : 3));
     col.innerHTML = rows.map((f) =>
       '<div class="frow"><div class="fk">' + esc(f.l || f.k) + '</div><div class="fv">' + esc(f.v) + "</div></div>"
     ).join("");
@@ -341,6 +362,7 @@
   }
 
   function commitScan() {
+    editingContact = false;
     state.store = CAT.store;
     state.unit = CAT.unit;
     state.price = CAT.price;
@@ -383,13 +405,17 @@
     $("#confirmBody").innerHTML =
       '<div class="src-strip">' +
         '<img id="srcThumb" alt="来源截图" />' +
-        '<div class="ss-main"><div class="ss-t">已从截图识别 ' + (state.fields.length + 2) + " 项字段</div>" +
+        '<div class="ss-main"><div class="ss-t">已从截图识别 ' + (state.fields.length + (kind === "leisure" ? 3 : 2)) + " 项字段</div>" +
         '<div class="ss-s">店名和询价单位必填，其余可改可删</div></div>' +
         '<button class="ss-btn" id="btnViewShot">查看原图</button>' +
       "</div>" +
 
       '<div class="sec-h">门店与单位</div>' +
       '<div class="card">' +
+        (kind === "leisure"
+          ? '<div class="kv"><span class="k">品类</span>' +
+            '<span class="v">' + esc(c.name) + '<button class="ss-btn" id="btnChangeCat" style="margin-left:9px">换</button></span></div>'
+          : "") +
         '<div class="kv block"><span class="k">店名<span class="req-dot"></span></span>' +
           '<span class="v editable" data-store="1">' + esc(state.store) + "</span></div>" +
         '<div class="kv"><span class="k">询价单位<span class="req-dot"></span></span>' +
@@ -424,6 +450,7 @@
       "</div></div>";
 
     $("#srcThumb").src = state.shotURL || sampleFor(c);
+    if ($("#btnChangeCat")) $("#btnChangeCat").addEventListener("click", openCatSheet);
     $("#btnViewShot").addEventListener("click", function () {
       openSheet("来源截图", "识别字段均取自这张截图",
         '<img src="' + (state.shotURL || sampleFor(CAT)) + '" style="width:100%;border-radius:14px;display:block;border:1px solid var(--line)" alt="来源截图">');
@@ -511,72 +538,71 @@
      ========================================================= */
   function renderNeeds() {
     const c = CAT;
-    $("#needsBody").innerHTML =
-      '<p class="lead" style="margin:2px 0 4px">一次说清楚，助理照这个去谈，不会临场漏掉你的条件。</p>' +
+    const known = savedContact();
+    const showInputs = !known || editingContact;
+    const showCat = kind === "leisure";
 
-      '<div class="sec-h">本次询价（来自截图）</div>' +
+    $("#needsBody").innerHTML =
+      '<p class="lead" style="margin:2px 0 4px">助理会按截图里的条件去问，有特别要求写在备注里就行。</p>' +
+
+      '<div class="sec-h">本次询价</div>' +
       '<div class="room-lock">' +
         '<div class="rl-t">' + esc(state.store) + '<span class="lock">不可改</span></div>' +
-        '<div class="rl-s">' + esc(state.unit) + " · " + money(state.price) + "</div>" +
-        '<div class="rl-n">需要换门店或套餐请回到首页重新上传截图，助理会按新条件重新询价。</div>' +
+        '<div class="rl-s">' + (showCat ? esc(c.name) + " · " : "") + esc(state.unit) + " · " + money(state.price) + "</div>" +
+        '<div class="rl-n">需要换门店或套餐请回到上一步修改，助理会按新条件重新询价。</div>' +
       "</div>" +
-
-      '<div class="sec-h">需要的条件（可多选）</div>' +
-      '<div class="chips" id="needChips">' +
-        c.needs.map((n) =>
-          '<button class="chip' + (state.needs.indexOf(n) > -1 ? " on" : "") + '" data-need="' + esc(n) + '"><span class="tick"></span>' + esc(n) + "</button>"
-        ).join("") +
-      "</div>" +
-      '<div style="font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.55">截图里没写到的条件，助理会当场问清楚再回报。</div>' +
 
       '<div class="sec-h">补充备注（可选）</div>' +
       '<textarea class="note-box" id="noteBox" rows="2" placeholder="例：需要发票、同行有老人小孩、预计几点到店…"></textarea>' +
 
-      '<div class="sec-h row-h"><span>联系人</span><em>必填 · 用于锁位</em></div>' +
-      '<div class="card" style="padding:2px 16px">' +
-        '<div class="contact-row"><span class="ck">姓名</span><input id="cName" type="text" maxlength="10" placeholder="例：王先生" autocomplete="off" /></div>' +
-        '<div class="contact-row"><span class="ck">手机号</span><input id="cPhone" type="tel" maxlength="11" inputmode="numeric" placeholder="11 位手机号" autocomplete="off" /></div>' +
-      "</div>" +
-      '<div class="contact-tip">助理以这个名字向' + (c.id === "hotel" ? "酒店" : "门店") + "锁位，" + c.merchant + "回电也打这个号码。仅用于本次询价，不会出现在分享内容里。</div>" +
+      (showInputs
+        ? '<div class="sec-h row-h"><span>联系人</span><em>必填 · 仅首次填写</em></div>' +
+          '<div class="card" style="padding:2px 16px">' +
+            '<div class="contact-row"><span class="ck">姓名</span><input id="cName" type="text" maxlength="10" placeholder="例：王先生" autocomplete="off" /></div>' +
+            '<div class="contact-row"><span class="ck">手机号</span><input id="cPhone" type="tel" maxlength="11" inputmode="numeric" placeholder="11 位手机号" autocomplete="off" /></div>' +
+          "</div>" +
+          '<div class="contact-tip">助理以这个名字向' + (c.id === "hotel" ? "酒店" : "门店") + "锁位，" + c.merchant + "回电也打这个号码。填一次，以后不用再填。</div>"
+        : '<div class="sec-h row-h"><span>联系人</span><em>已保存</em></div>' +
+          '<div class="card" style="padding:2px 16px">' +
+            '<div class="kv"><span class="k">' + esc(known.name) + '</span>' +
+              '<span class="v" style="display:flex;align-items:center;gap:10px;justify-content:flex-end">' +
+                maskPhone(known.phone) +
+                '<button class="ss-btn" id="btnEditContact">修改</button>' +
+              "</span></div>" +
+          "</div>") +
+      "";
 
-      '<div class="sumline" id="sumLine"></div>';
-
-    $("#cName").value = state.contact.name;
-    $("#cPhone").value = state.contact.phone;
-    $("#cName").addEventListener("input", refreshStart);
-    $("#cPhone").addEventListener("input", function () {
-      this.value = this.value.replace(/\D/g, "").slice(0, 11);
-      state.contact.name = $("#cName").value.trim();
-      state.contact.phone = this.value;
-      refreshStart();
-    });
-    $("#needChips").addEventListener("click", function (e) {
-      const chip = e.target.closest(".chip");
-      if (!chip) return;
-      chip.classList.toggle("on");
-      const n = chip.dataset.need;
-      if (chip.classList.contains("on")) { if (state.needs.indexOf(n) < 0) state.needs.push(n); }
-      else state.needs = state.needs.filter((x) => x !== n);
-      renderSum();
-    });
-    renderSum();
+    if (showInputs) {
+      $("#cName").value = state.contact.name;
+      $("#cPhone").value = state.contact.phone;
+      $("#cName").addEventListener("input", function () {
+        state.contact.name = this.value.trim();
+        refreshStart();
+      });
+      $("#cPhone").addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, "").slice(0, 11);
+        state.contact.phone = this.value;
+        refreshStart();
+      });
+    } else {
+      state.contact = { name: known.name, phone: known.phone };
+      $("#btnEditContact").addEventListener("click", function () {
+        editingContact = true;
+        renderNeeds();
+      });
+    }
     refreshStart();
   }
 
-  function renderSum() {
-    const parts = [state.unit].concat(state.needs.length ? [state.needs.join(" · ")] : []);
-    $("#sumLine").textContent = parts.join(" · ");
-  }
+  let editingContact = false;
 
   function contactOK() {
-    const n = ($("#cName").value || "").trim();
-    const p = ($("#cPhone").value || "").replace(/\s/g, "");
+    const n = (state.contact.name || "").trim();
+    const p = (state.contact.phone || "").replace(/\s/g, "");
     return n.length >= 1 && n.length <= 10 && /^1[3-9]\d{9}$/.test(p);
   }
   function refreshStart() {
     if (!$("#btnStart")) return;
-    state.contact.name = ($("#cName").value || "").trim();
-    state.contact.phone = ($("#cPhone").value || "").replace(/\s/g, "");
     const ok = contactOK();
     $("#btnStart").disabled = !ok;
     $("#startNote").textContent = ok
@@ -632,7 +658,7 @@
   function buildSteps() {
     const c = CAT;
     const defs = [
-      { t: "整理需求", sub: "已生成询价要点 " + (state.needs.length + 1) + " 项" },
+      { t: "整理需求", sub: "已从截图整理条件 " + (state.fields.length + 2) + " 项" },
       { t: "联系" + (c.id === "hotel" ? "酒店" : "门店"), sub: c.merchant + " · " + c.tel },
       { t: "确认条件与权益", sub: c.winBenefit },
       { t: "询问优惠", sub: c.labels.quote + " · 当场可付" },
@@ -778,7 +804,7 @@
       unit: state.unit,
       price: state.price,
       fields: state.fields.map((f) => ({ l: f.l, v: f.v })),
-      needs: state.needs.slice(),
+      needs: CAT.needsDefault.slice(),
       meta: summarize(),
       scn: scn,
       status: "running",
@@ -796,6 +822,10 @@
     records.unshift(rec);
     save();
     activeRec = rec;
+
+    // 首次填过的联系人记下来，下次不再问
+    if (state.contact.name && state.contact.phone) persistContact(state.contact);
+    editingContact = false;
 
     buildSteps();
     $("#progName").textContent = rec.store;
@@ -1119,30 +1149,28 @@
   }
 
   /* =========================================================
-     品类列表
+     换品类（识别错了才用）
      ========================================================= */
-  function renderCats() {
-    $("#catBody").innerHTML =
-      '<div class="rec-head" style="margin-bottom:6px"><h1>休闲娱乐</h1><span>选一个品类</span></div>' +
-      '<p class="lead" style="margin:0 0 14px">团购价不一定是最低的价格。传一张截图，助理替你跟门店谈一谈。</p>' +
-      '<div class="catgrid">' +
-      LEISURE.map(function (id) {
-        const c = CATS[id];
-        return '<div class="cat" data-cat="' + id + '">' +
-          '<div class="ci"><svg viewBox="0 0 24 24">' + (ICONS[id] || "") + "</svg></div>" +
-          '<div class="cn">' + c.name + "</div>" +
-          "</div>";
-      }).join("") +
-      "</div>" +
-      '<p class="home-foot" style="margin-top:22px">品类还在增加。</p>';
+  function openCatSheet() {
+    let html = '<div style="font-size:11.5px;color:var(--muted);line-height:1.6;margin-bottom:14px">' +
+      "识别错了？选一个正确的品类，字段和计价方式会一起换掉。</div>";
+    html += LEISURE.map(function (id) {
+      const c = CATS[id];
+      return '<div class="opt' + (CAT.id === id ? " on" : "") + '" data-cat="' + id + '">' +
+        '<div class="opt-radio"></div>' +
+        '<div class="opt-main"><div class="opt-t">' + c.name + "</div>" +
+        '<div class="opt-s">按 ' + esc(c.unit) + " 询价</div></div></div>";
+    }).join("");
+    openSheet("换一个品类", "当前识别为 " + CAT.name, html);
 
-    $$("#catBody .cat").forEach(function (el) {
+    $$("#sheetBody .opt").forEach(function (el) {
       el.addEventListener("click", function () {
-        CAT = CATS[el.dataset.cat];
-        setRootTab("s7");
-        renderHome();
-        go("s1", -1);
-        setRootTab("s7");
+        const id = el.dataset.cat;
+        CAT = CATS[id];
+        commitScan();
+        renderConfirm();
+        closeSheet();
+        toast("已换成 " + CATS[id].name);
       });
     });
   }
@@ -1251,7 +1279,7 @@
   /* =========================================================
      导航
      ========================================================= */
-  function isTabScreen(id) { return id === "s1" || id === "s6" || id === "s7"; }
+  function isTabScreen(id) { return id === "s1" || id === "s6"; }
   function isCurrent(id) { const el = document.getElementById(id); return !!el && el.classList.contains("active"); }
 
   function go(id, dir) {
@@ -1280,29 +1308,31 @@
     if (id === "s2") renderConfirm();
     if (id === "s3") renderNeeds();
     if (id === "s6") renderRecords();
-    if (id === "s7") renderCats();
 
     $("#tabbar").classList.toggle("hide", !isTabScreen(id));
-    if (id === "s6" || id === "s7") setRootTab(id);
-    else setRootTab(rootTab);
+    if (id === "s6") setRootTab("records"); else setRootTab(rootTab);
   }
 
-  let rootTab = "s1";
+  let rootTab = "hotel";
   function setRootTab(t) {
     rootTab = t;
     $$(".tab").forEach((x) => x.classList.toggle("on", x.dataset.tab === rootTab));
+  }
+
+  function switchTab(which) {
+    if (which === "records") { go("s6", 1); setRootTab("records"); return; }
+    kind = which;
+    CAT = which === "hotel" ? CATS.hotel : (CATS[CAT.id] && CAT.id !== "hotel" ? CAT : CATS.ktv);
+    renderHome();
+    go("s1", -1);
+    setRootTab(which);
   }
 
   document.addEventListener("click", function (e) {
     const t = e.target.closest("[data-go]");
     if (t) { go(t.dataset.go, parseInt(t.dataset.dir || "1", 10)); return; }
     const tab = e.target.closest(".tab");
-    if (tab) {
-      const id = tab.dataset.tab;
-      setRootTab(id);
-      if (id === "s1") { CAT = CATS.hotel; renderHome(); }
-      go(id, id === "s1" ? -1 : 1);
-    }
+    if (tab) { switchTab(tab.dataset.tab); return; }
     const more = e.target.closest(".step-more");
     if (more) {
       const step = more.closest(".step");
@@ -1327,7 +1357,6 @@
 
   $$(".ctrl [data-scn]").forEach(function (b) {
     b.addEventListener("click", function () {
-      if (isCurrent("s7")) { toast("先选一个品类"); return; }
       if (!state.store || state.store !== CAT.store) commitScan();
       $$(".ctrl [data-scn]").forEach((x) => x.classList.remove("on"));
       b.classList.add("on");
@@ -1352,6 +1381,7 @@
     activeRec = null;
     state.scenario = "win";
     $$(".ctrl [data-scn]").forEach((x) => x.classList.toggle("on", x.dataset.scn === "win"));
+    kind = "hotel";
     CAT = CATS.hotel;
     renderHome();
     go("s1", -1);
@@ -1407,6 +1437,7 @@
   renderRecords();
   buildSteps();
   bindConfirm();
+  setRootTab("hotel");
 
   setInterval(function () {
     if (!isCurrent("s6")) return;

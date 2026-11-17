@@ -206,7 +206,6 @@
   .tab.on svg{transform:translateY(-1px)}
   #s1 .body{padding-bottom:80px}
   #s6 .body{padding-bottom:80px}
-  #s7 .body{padding-bottom:80px}
 
   /* ---------- upload / scan ---------- */
   .upload{
@@ -630,7 +629,7 @@
     .viewport{border-radius:0}
     .homebar{display:none}
     .tabbar{height:56px;padding-bottom:env(safe-area-inset-bottom)}
-    #s1 .body,#s6 .body,#s7 .body{padding-bottom:70px}
+    #s1 .body,#s6 .body{padding-bottom:70px}
     .ctrl{margin-top:10px;margin-bottom:20px}
     .push{top:6px}
   }
