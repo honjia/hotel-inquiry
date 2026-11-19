@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>砍价 · 项目说明与设计图纸</title>
+<style>
+  :root{
+    --bg:#F6F1E8; --paper:#FFFCF6; --ink:#2B2521; --ink2:#5F564C; --muted:#8C7F70;
+    --line:#E8DECD; --line2:#DBD0BD; --accent:#BC5F35; --accent2:#A94F2C;
+    --olive:#6C7C58; --amber:#A8792F;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+    font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px 80px}
+  header.top{padding:56px 0 26px;border-bottom:1px solid var(--line)}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:2.4px;color:var(--accent);margin-bottom:14px}
+  h1{font-size:34px;line-height:1.3;font-weight:800;letter-spacing:-.6px;margin:0 0 12px}
+  .sub{font-size:16px;color:var(--ink2);margin:0 0 22px;max-width:640px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 10px;font-size:12px;color:var(--muted)}
+  .meta span{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+  .meta a{color:var(--accent2);text-decoration:none;border-bottom:1px dashed rgba(169,79,44,.45)}
+  nav.toc{position:sticky;top:0;z-index:20;background:rgba(246,241,232,.94);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);margin:0 -24px 8px;padding:10px 24px;display:flex;gap:6px;overflow-x:auto}
+  nav.toc a{flex:0 0 auto;font-size:12.5px;font-weight:600;color:var(--ink2);text-decoration:none;
+    padding:5px 11px;border-radius:8px;white-space:nowrap}
+  nav.toc a:hover{background:var(--paper);color:var(--accent2)}
+  section{padding:34px 0 6px;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  h2{font-size:21px;font-weight:800;letter-spacing:-.3px;margin:0 0 6px;display:flex;align-items:baseline;gap:10px}
+  h2 em{font-style:normal;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:1px}
+  h3{font-size:15px;font-weight:750;margin:26px 0 8px}
+  p{margin:0 0 14px;color:var(--ink2)}
+  p.lead{font-size:16px;color:var(--ink);line-height:1.8}
+  strong{color:var(--ink);font-weight:700}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;
+    background:#F1E9DB;border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:#7C4A2F}
+  pre{background:#2E2823;color:#EDE5DA;border-radius:14px;padding:16px 18px;overflow-x:auto;
+    font-size:12.5px;line-height:1.7;margin:0 0 16px}
+  pre code{background:none;border:0;color:inherit;padding:0;font-size:inherit}
+  ul,ol{margin:0 0 16px;padding-left:22px;color:var(--ink2)}
+  li{margin:5px 0}
+  li b{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 18px}
+  .box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .box h4{margin:0 0 8px;font-size:13px;font-weight:750;letter-spacing:.3px}
+  .box.do h4{color:var(--olive)}
+  .box.dont h4{color:var(--accent2)}
+  .box ul{margin:0;padding-left:18px;font-size:13.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 18px;background:var(--paper);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{background:#F1E9DB;text-align:left;font-weight:700;color:var(--ink);padding:9px 12px;
+    border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+  td{padding:9px 12px;border-bottom:1px solid #F0E7D8;color:var(--ink2);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td code{font-size:12px}
+  figure{margin:10px 0 22px;background:#FBF6EC;border:1px solid var(--line);border-radius:16px;
+    padding:18px 18px 12px;overflow-x:auto}
+  figure svg{display:block;min-width:620px;width:100%;height:auto}
+  figcaption{font-size:12px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px dashed var(--line2);
+    line-height:1.6}
+  .note{border-left:3px solid var(--accent);background:#FBF1E6;border-radius:0 10px 10px 0;
+    padding:12px 16px;margin:0 0 18px;font-size:13.5px;color:#6E4A31}
+  .note b{color:var(--accent2)}
+  .warnbox{border-left:3px solid var(--amber);background:#FAF2E2;border-radius:0 10px 10px 0;
+    padding:12px 16px;margin:0 0 18px;font-size:13.5px;color:#7A5A26}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px}
+  .kw span{font-size:12px;background:var(--paper);border:1px solid var(--line2);border-radius:20px;
+    padding:4px 11px;color:var(--ink2);font-weight:600}
+  footer{padding:34px 0 0;font-size:12px;color:var(--muted);line-height:1.8}
+  @media (max-width:720px){
+    h1{font-size:27px}
+    .grid2{grid-template-columns:1fr}
+    .wrap{padding:0 16px 60px}
+    nav.toc{margin:0 -16px 8px;padding:10px 16px}
+  }
+  @media print{
+    body{background:#fff;font-size:12px}
+    nav.toc{display:none}
+    section{page-break-inside:avoid}
+    figure{page-break-inside:avoid;background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">产品原型 · 技术说明</div>
+  <h1>砍价：把议价这件事外包出去</h1>
+  <p class="sub">用户上传一张带价格的截图，助理替他去跟商家谈，最后给一张说得清的结果卡，并把商家的微信留下。</p>
+  <div class="meta">
+    <span>纯静态 · 无构建 · 无后端</span>
+    <span>index.html + app.css + app.js</span>
+    <span>6 个品类 · 1 套引擎</span>
+    <span>文档版本 2026-11-19</span>
+    <span><a href="https://honjia.github.io/hotel-inquiry/">在线预览</a></span>
+    <span><a href="https://github.com/honjia/hotel-inquiry">GitHub</a></span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#overview">1 概览</a>
+  <a href="#users">2 用户与场景</a>
+  <a href="#scope">3 范围</a>
+  <a href="#flow">4 业务流程</a>
+  <a href="#pages">5 页面跳转</a>
+  <a href="#state">6 状态与数据</a>
+  <a href="#impl">7 关键实现</a>
+  <a href="#extend">8 扩展指南</a>
+  <a href="#limits">9 限制与上线前</a>
+</nav>
+
+<section id="overview">
+  <h2><em>01</em>项目概览</h2>
+  <p class="lead">砍价是一个到店消费的议价代理原型。它要验证的不是「AI 说话像不像人」，而是：<strong>用户不用重复查找、重复说明，几步就能拿到一个说得清、能执行的价格。</strong></p>
+  <p>用户在 OTA、团购页或商家聊天里看到一个报价，截图上传；系统识别出门店、项目、总价和条件；用户确认或修正；助理按这些条件打电话去谈，谈完给三种明确答复之一。整个过程中，用户只需要做三次决定：传哪张图、条件对不对、要不要现在问。</p>
+  <div class="kw">
+    <span>到店消费</span><span>代客议价</span><span>截图识别</span><span>异步任务</span>
+    <span>微信留资</span><span>可追溯沟通记录</span>
+  </div>
+  <h3>它现在是什么</h3>
+  <ul>
+    <li><b>产品原型</b>：用于讨论形态和流程，不是可商用服务。所有商家、电话、微信、价格、通话内容都是本地演示数据，页面不发任何网络请求。</li>
+    <li><b>可演示</b>：双击 <code>index.html</code> 就能跑；手机宽度下自动去掉拟真外框铺满全屏；压缩包可直接发给别人。</li>
+    <li><b>可扩展</b>：加一个品类只改 <code>CATS</code> 配置，渲染与流程代码不动。</li>
+  </ul>
+  <h3>技术形态</h3>
+  <table>
+    <thead><tr><th>层次</th><th>实现</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>视图</td><td>单个 HTML，6 个 <code>.screen</code> 绝对定位叠放</td><td>切换靠 <code>active</code> 类 + transform，不是浏览器路由</td></tr>
+      <tr><td>样式</td><td>原生 CSS，CSS 变量做主题</td><td>暖米色 / 陶土 / 橄榄；<code>460px</code> 断点去掉手机外框</td></tr>
+      <tr><td>逻辑</td><td>原生 JS，IIFE，无依赖</td><td>配置驱动的渲染 + 时间轴驱动的进度</td></tr>
+      <tr><td>存储</td><td>浏览器 localStorage</td><td>记录 <code>kanjia.records.v2</code>、联系人 <code>kanjia.contact.v1</code></td></tr>
+      <tr><td>构建</td><td>无</td><td>没有 npm、没有打包、没有服务端</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="users">
+  <h2><em>02</em>目标用户与场景</h2>
+  <h3>目标用户</h3>
+  <p>已经看中某个门店或套餐、但觉得价格还能再谈的普通消费者。两类人：订酒店民宿的出行人群，和到店娱乐消费的人群（KTV、按摩足疗、酒吧、健身房、洗浴桑拿）。</p>
+  <p>共同特征：<strong>手里有一个明确报价，但不擅长、也不愿意自己开口砍价</strong>。他们不缺信息，缺的是「替我去问」的那个人，以及一个不用寒暄、不用来回拉扯的过程。</p>
+  <h3>典型场景</h3>
+  <p>周五想订周六的 KTV 中包，团购页写 1,480 元 4 小时。用户不确定这个价是不是最低、能不能送果盘、开台费能不能免。让他自己打门店电话，要重复说人数、时段、包型，还要面对「这个我得问一下」的等待。这个 Demo 把这一段整个接走：传图、确认、等结果。</p>
+  <h3>非目标</h3>
+  <ul>
+    <li>不做比价搜索引擎：只处理用户主动上传的这一张报价。</li>
+    <li>不做通用客服：不回答门店营业时间、路线之类的问题。</li>
+    <li>不做交易闭环：不收款、不下单、不出订单号。</li>
+  </ul>
+</section>
+
+<section id="scope">
+  <h2><em>03</em>做什么，不做什么</h2>
+  <div class="grid2">
+    <div class="box do">
+      <h4>做</h4>
+      <ul>
+        <li>截图识别：门店、项目、总价、计价单位、已含权益</li>
+        <li>字段可改、可删、可加；只有店名和单位必填</li>
+        <li>给出议价目标区间（标价 × 0.85 起谈）</li>
+        <li>代打电话、确认条件、谈直订价</li>
+        <li>三种结局都给明确答复，不编价格</li>
+        <li>成交后索取商家微信 / 企业微信，结果页可复制</li>
+        <li>异步任务：可离开、可通知、刷新可恢复</li>
+        <li>沟通记录完整保留，可逐段展开</li>
+      </ul>
+    </div>
+    <div class="box dont">
+      <h4>不做</h4>
+      <ul>
+        <li>不做医美等医疗合规品类</li>
+        <li>不做真实支付、下单、预订</li>
+        <li>演示阶段不拨真实电话</li>
+        <li>不承诺「一定砍成」</li>
+        <li>未接通不推测价格或优惠</li>
+        <li>不出虚假订单号、支付成功状态</li>
+        <li>不代用户付款</li>
+        <li>非成交询价不索取、不展示联系方式</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><b>一条硬规则：</b>截图里没有的条件，助理不会替用户猜，会在通话里当场问；问不到就写「未确认」，不用默认值填空。</div>
+</section>
+
+<section id="flow">
+  <h2><em>04</em>业务流程图</h2>
+  <p>主链只有一条，分叉只有两个：<strong>接没接通</strong>、<strong>愿不愿意让价</strong>。角色用颜色区分——用户负责三次确认，助理负责识别与代谈，商家只在通话里出现。</p>
+  <figure>
+    <svg viewBox="0 0 680 964" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>砍价业务流程与角色分工</title>
+      <desc>用户上传截图，系统识别字段，用户确认询价单与需求，助理代打电话议价，按接通与让价分成三种结局。</desc>
+      <defs>
+        <marker id="f1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#B7A794" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <style>
+        .fn{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:13px;font-weight:600;fill:#2B2521}
+        .fs{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:11.5px;font-weight:400;fill:#6F6152}
+        .fk{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:11px;font-weight:400;fill:#8C7F70}
+        .fe{stroke:#B7A794;stroke-width:1.2;fill:none;marker-end:url(#f1)}
+      </style>
+      <rect x="40" y="30" width="9" height="9" rx="2" fill="#FDF0E6" stroke="#D08B62" stroke-width="0.8"/>
+      <text class="fk" x="55" y="38" dominant-baseline="central">用户</text>
+      <rect x="118" y="30" width="9" height="9" rx="2" fill="#EFF3E6" stroke="#9CAF8B" stroke-width="0.8"/>
+      <text class="fk" x="133" y="38" dominant-baseline="central">助理 / 系统</text>
+      <rect x="236" y="30" width="9" height="9" rx="2" fill="#F7EFE4" stroke="#C9B294" stroke-width="0.8"/>
+      <text class="fk" x="251" y="38" dominant-baseline="central">商家</text>
+      <text class="fk" x="640" y="38" text-anchor="end" dominant-baseline="central">三种结局，一条主流程</text>
+      <text class="fk" x="340" y="72" text-anchor="middle" dominant-baseline="central">用户手里已有一张带价格的截图</text>
+      <rect x="250" y="88" width="180" height="56" rx="8" fill="#FDF0E6" stroke="#D08B62" stroke-width="0.8"/>
+      <text class="fn" x="340" y="108" text-anchor="middle" dominant-baseline="central">上传报价截图</text>
+      <text class="fs" x="340" y="126" text-anchor="middle" dominant-baseline="central">团购 / OTA / 聊天报价</text>
+      <path class="fe" d="M340 144 L340 158"/>
+      <rect x="250" y="164" width="180" height="56" rx="8" fill="#EFF3E6" stroke="#9CAF8B" stroke-width="0.8"/>
+      <text class="fn" x="340" y="184" text-anchor="middle" dominant-baseline="central">识别门店与报价</text>
+      <text class="fs" x="340" y="202" text-anchor="middle" dominant-baseline="central">缺的项不猜，留空待补</text>
+      <path class="fe" d="M340 220 L340 234"/>
+      <rect x="250" y="240" width="180" height="56" rx="8" fill="#FDF0E6" stroke="#D08B62" stroke-width="0.8"/>
+      <text class="fn" x="340" y="260" text-anchor="middle" dominant-baseline="central">确认询价单</text>
+      <text class="fs" x="340" y="278" text-anchor="middle" dominant-baseline="central">可改字段 · 可换品类</text>
+      <text class="fk" x="40" y="254" dominant-baseline="central">只有店名和单位必填</text>
+      <text class="fk" x="40" y="272" dominant-baseline="central">其余字段可改可删可加</text>
+      <path class="fe" d="M340 296 L340 310"/>
+      <rect x="250" y="316" width="180" height="56" rx="8" fill="#FDF0E6" stroke="#D08B62" stroke-width="0.8"/>
+      <text class="fn" x="340" y="336" text-anchor="middle" dominant-baseline="central">确认需求</text>
+      <text class="fs" x="340" y="354" text-anchor="middle" dominant-baseline="central">备注 + 联系人（首次）</text>
+      <text class="fk" x="40" y="330" dominant-baseline="central">联系人只填一次</text>
+      <text class="fk" x="40" y="348" dominant-baseline="central">存浏览器本地复用</text>
+      <path class="fe" d="M340 372 L340 386"/>
+      <rect x="250" y="392" width="180" height="56" rx="8" fill="#EFF3E6" stroke="#9CAF8B" stroke-width="0.8"/>
+      <text class="fn" x="340" y="412" text-anchor="middle" dominant-baseline="central">拨打商家电话</text>
+      <text class="fs" x="340" y="430" text-anchor="middle" dominant-baseline="central">报条件、确认权益</text>
+      <path class="fe" d="M340 448 L340 462"/>
+      <path d="M340 468 L425 504 L340 540 L255 504 Z" fill="#FBF2DE" stroke="#D3A960" stroke-width="0.8"/>
+      <text class="fn" x="340" y="500" text-anchor="middle" dominant-baseline="central">接通？</text>
+      <text class="fs" x="340" y="517" text-anchor="middle" dominant-baseline="central">两次未接即失败</text>
+      <text class="fk" x="268" y="504" text-anchor="end" dominant-baseline="central">是</text>
+      <text class="fk" x="412" y="488" text-anchor="middle" dominant-baseline="central">否</text>
+      <path class="fe" d="M425 504 L452 504"/>
+      <rect x="460" y="476" width="180" height="56" rx="8" fill="#FBEDE2" stroke="#CB9068" stroke-width="0.8"/>
+      <text class="fn" x="550" y="496" text-anchor="middle" dominant-baseline="central">未接通</text>
+      <text class="fs" x="550" y="514" text-anchor="middle" dominant-baseline="central">记录：未取得报价</text>
+      <text class="fk" x="460" y="548" dominant-baseline="central">不推测价格与优惠</text>
+      <text class="fk" x="460" y="566" dominant-baseline="central">可按同条件再拨一次</text>
+      <path class="fe" d="M340 540 L340 558"/>
+      <rect x="250" y="564" width="180" height="56" rx="8" fill="#F7EFE4" stroke="#C9B294" stroke-width="0.8"/>
+      <text class="fn" x="340" y="584" text-anchor="middle" dominant-baseline="central">确认条件与权益</text>
+      <text class="fs" x="340" y="602" text-anchor="middle" dominant-baseline="central">价格 · 规则 · 能否订</text>
+      <path class="fe" d="M340 620 L340 634"/>
+      <path d="M340 640 L425 676 L340 712 L255 676 Z" fill="#FBF2DE" stroke="#D3A960" stroke-width="0.8"/>
+      <text class="fn" x="340" y="672" text-anchor="middle" dominant-baseline="central">愿意让价？</text>
+      <text class="fs" x="340" y="689" text-anchor="middle" dominant-baseline="central">直订 vs 平台价</text>
+      <text class="fk" x="268" y="676" text-anchor="end" dominant-baseline="central">是</text>
+      <text class="fk" x="412" y="660" text-anchor="middle" dominant-baseline="central">否</text>
+      <text class="fk" x="40" y="662" dominant-baseline="central">议价目标</text>
+      <text class="fk" x="40" y="680" dominant-baseline="central">= 标价 × 0.85</text>
+      <path class="fe" d="M425 676 L452 676"/>
+      <rect x="460" y="648" width="180" height="56" rx="8" fill="#FBEDE2" stroke="#CB9068" stroke-width="0.8"/>
+      <text class="fn" x="550" y="668" text-anchor="middle" dominant-baseline="central">商家无优惠</text>
+      <text class="fs" x="550" y="686" text-anchor="middle" dominant-baseline="central">原价 + 额外权益</text>
+      <text class="fk" x="460" y="720" dominant-baseline="central">额外权益单独列出</text>
+      <text class="fk" x="460" y="738" dominant-baseline="central">可改需求重新询价</text>
+      <path class="fe" d="M340 712 L340 730"/>
+      <rect x="250" y="736" width="180" height="56" rx="8" fill="#EFF3E6" stroke="#9CAF8B" stroke-width="0.8"/>
+      <text class="fn" x="340" y="756" text-anchor="middle" dominant-baseline="central">索取商家微信</text>
+      <text class="fs" x="340" y="774" text-anchor="middle" dominant-baseline="central">企业微信或微信</text>
+      <path class="fe" d="M340 792 L340 806"/>
+      <rect x="250" y="812" width="180" height="56" rx="8" fill="#EAF1E0" stroke="#8FA878" stroke-width="0.8"/>
+      <text class="fn" x="340" y="832" text-anchor="middle" dominant-baseline="central">成功结果卡</text>
+      <text class="fs" x="340" y="850" text-anchor="middle" dominant-baseline="central">成交价 + 微信号 + 电话</text>
+      <text class="fk" x="40" y="828" dominant-baseline="central">联系方式只对</text>
+      <text class="fk" x="40" y="846" dominant-baseline="central">成交的询价展示</text>
+      <path class="fe" d="M340 868 L340 882"/>
+      <rect x="230" y="888" width="220" height="56" rx="8" fill="#FDF0E6" stroke="#D08B62" stroke-width="0.8"/>
+      <text class="fn" x="340" y="908" text-anchor="middle" dominant-baseline="central">到店 · 报「砍价 · 姓名」</text>
+      <text class="fs" x="340" y="926" text-anchor="middle" dominant-baseline="central">口头锁价变成可追溯记录</text>
+    </svg>
+    <figcaption>图 1　业务闭环与角色分工。用户只出现在 4 个节点（上传、确认询价单、确认需求、到店），其余由助理完成。未接通与无优惠都收敛到结果卡，不产生中间态。</figcaption>
+  </figure>
+  <h3>三条核心规则</h3>
+  <ol>
+    <li><b>必填只有两项</b>：店名和询价单位。其余字段都可改、可删、可加——截图里没有的东西，助理不猜。</li>
+    <li><b>只记消费总价</b>：单位作为分母挂在后面（<code>¥1,480 / 4 小时</code>），不做「每晚价 / 全程总价」切换。</li>
+    <li><b>目标价 = 标价 × 0.85</b>：结果页必须落在 <code>[目标, 标价]</code> 区间；谈不到就如实报原价，不美化。</li>
+  </ol>
+</section>
+
+<section id="pages">
+  <h2><em>05</em>页面跳转图</h2>
+  <p>六个页面里，<code>s1</code> 和 <code>s6</code> 是 tab 级页面（显示 tab bar），<code>s2</code>–<code>s5</code> 是流程页（tab bar 隐藏，只能按流程前进或后退）。四个 Sheet 是覆盖层，不参与路由。</p>
+  <figure>
+    <svg viewBox="0 0 680 556" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>砍价页面跳转图</title>
+      <desc>六个页面与四个弹层的入口、跳转条件和返回路径，含刷新恢复。</desc>
+      <defs>
+        <marker id="f2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#B7A794" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <style>
+        .pn{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:13px;font-weight:600;fill:#2B2521}
+        .ps2{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:11px;font-weight:400;fill:#6F6152}
+        .pk{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:11px;font-weight:400;fill:#8C7F70}
+        .pe{stroke:#B7A794;stroke-width:1.2;fill:none;marker-end:url(#f2)}
+        .pd{stroke:#B7A794;stroke-width:1;stroke-dasharray:4 4;fill:none;marker-end:url(#f2)}
+      </style>
+      <text class="pk" x="40" y="36" dominant-baseline="central">tab 级页面</text>
+      <rect x="130" y="30" width="9" height="9" rx="2" fill="#EAF1F7" stroke="#8FB0CB" stroke-width="0.8"/>
+      <text class="pk" x="145" y="36" dominant-baseline="central">流程页（tab bar 隐藏）</text>
+      <rect x="300" y="30" width="9" height="9" rx="2" fill="none" stroke="#C2B09A" stroke-width="0.8" stroke-dasharray="2 2"/>
+      <text class="pk" x="315" y="36" dominant-baseline="central">覆盖层 sheet（不占路由）</text>
+      <rect x="40" y="96" width="150" height="66" rx="8" fill="#EFF3E6" stroke="#9CAF8B" stroke-width="0.8"/>
+      <text class="pn" x="115" y="122" text-anchor="middle" dominant-baseline="central">① 首页</text>
+      <text class="ps2" x="115" y="141" text-anchor="middle" dominant-baseline="central">上传 · 示例图</text>
+      <rect x="245" y="96" width="150" height="66" rx="8" fill="#EAF1F7" stroke="#8FB0CB" stroke-width="0.8"/>
+      <text class="pn" x="320" y="122" text-anchor="middle" dominant-baseline="central">② 确认询价单</text>
+      <text class="ps2" x="320" y="141" text-anchor="middle" dominant-baseline="central">店名 + 单位必填</text>
+      <rect x="450" y="96" width="150" height="66" rx="8" fill="#EAF1F7" stroke="#8FB0CB" stroke-width="0.8"/>
+      <text class="pn" x="525" y="122" text-anchor="middle" dominant-baseline="central">③ 确认需求</text>
+      <text class="ps2" x="525" y="141" text-anchor="middle" dominant-baseline="central">联系人合法才可开始</text>
+      <path class="pe" d="M190 129 L238 129"/>
+      <text class="pk" x="214" y="114" text-anchor="middle" dominant-baseline="central">识别 2.6s</text>
+      <path class="pe" d="M395 129 L443 129"/>
+      <text class="pk" x="419" y="114" text-anchor="middle" dominant-baseline="central">下一步</text>
+      <path class="pe" d="M525 162 L525 242"/>
+      <text class="pk" x="535" y="196" dominant-baseline="central">开始询价</text>
+      <text class="pk" x="535" y="212" dominant-baseline="central">联系人合法</text>
+      <rect x="450" y="250" width="150" height="66" rx="8" fill="#EAF1F7" stroke="#8FB0CB" stroke-width="0.8"/>
+      <text class="pn" x="525" y="276" text-anchor="middle" dominant-baseline="central">④ 沟通进度</text>
+      <text class="ps2" x="525" y="295" text-anchor="middle" dominant-baseline="central">出口：等会看 / 通知</text>
+      <path class="pe" d="M450 283 L402 283"/>
+      <text class="pk" x="426" y="268" text-anchor="middle" dominant-baseline="central">计时结束</text>
+      <rect x="245" y="250" width="150" height="66" rx="8" fill="#EAF1F7" stroke="#8FB0CB" stroke-width="0.8"/>
+      <text class="pn" x="320" y="276" text-anchor="middle" dominant-baseline="central">⑤ 结果卡</text>
+      <text class="ps2" x="320" y="295" text-anchor="middle" dominant-baseline="central">win / none / fail</text>
+      <path class="pe" d="M245 283 L197 283"/>
+      <text class="pk" x="221" y="268" text-anchor="middle" dominant-baseline="central">返回</text>
+      <rect x="40" y="250" width="150" height="66" rx="8" fill="#EFF3E6" stroke="#9CAF8B" stroke-width="0.8"/>
+      <text class="pn" x="115" y="276" text-anchor="middle" dominant-baseline="central">⑥ 砍价记录</text>
+      <text class="ps2" x="115" y="295" text-anchor="middle" dominant-baseline="central">点卡进进度或结果</text>
+      <path class="pd" d="M115 250 L115 168"/>
+      <text class="pk" x="125" y="200" dominant-baseline="central">tab 切换</text>
+      <text class="pk" x="125" y="216" dominant-baseline="central">返回首页</text>
+      <path class="pd" d="M300 250 L300 215 L480 215 L480 164"/>
+      <text class="pk" x="392" y="234" text-anchor="middle" dominant-baseline="central">无优惠：调整需求</text>
+      <path class="pd" d="M330 316 L330 352 L525 352 L525 320"/>
+      <text class="pk" x="424" y="366" text-anchor="middle" dominant-baseline="central">未接通：再次尝试（同条件新记录）</text>
+      <text class="pk" x="40" y="400" dominant-baseline="central">覆盖层</text>
+      <rect x="40" y="414" width="180" height="72" rx="8" fill="none" stroke="#C2B09A" stroke-width="0.8" stroke-dasharray="3 3"/>
+      <text class="pn" x="52" y="436" dominant-baseline="central" font-size="12">来源截图 / 换品类</text>
+      <text class="pk" x="52" y="455" dominant-baseline="central">由 s2 触发，关闭回 s2</text>
+      <text class="pk" x="52" y="471" dominant-baseline="central">换品类会重置字段</text>
+      <rect x="243" y="414" width="182" height="72" rx="8" fill="none" stroke="#C2B09A" stroke-width="0.8" stroke-dasharray="3 3"/>
+      <text class="pn" x="255" y="436" dominant-baseline="central" font-size="12">沟通记录</text>
+      <text class="pk" x="255" y="455" dominant-baseline="central">s4 步骤、s5 按钮</text>
+      <text class="pk" x="255" y="471" dominant-baseline="central">记录卡也可查看</text>
+      <rect x="448" y="414" width="152" height="72" rx="8" fill="none" stroke="#C2B09A" stroke-width="0.8" stroke-dasharray="3 3"/>
+      <text class="pn" x="460" y="436" dominant-baseline="central" font-size="12">分享 / 通知方式</text>
+      <text class="pk" x="460" y="455" dominant-baseline="central">仅 win 可分享</text>
+      <text class="pk" x="460" y="471" dominant-baseline="central">通知方式由 s4 触发</text>
+      <text class="pk" x="40" y="518" dominant-baseline="central">虚线 = 回退或旁路。刷新后按记录状态恢复：running 续跑，done 直接看结果。</text>
+      <text class="pk" x="40" y="536" dominant-baseline="central">s4 的「等会来看」「通知我」都跳到 s6，任务不中断。</text>
+    </svg>
+    <figcaption>图 2　页面跳转。主链 s1 → s2 → s3 → s4 → s5；回退路径只有三条：s5→s6、s5→s3（无优惠重问）、s5→s4（未接通重拨）。</figcaption>
+  </figure>
+  <h3>入口条件（代码位置）</h3>
+  <table>
+    <thead><tr><th>跳转</th><th>触发</th><th>守卫条件</th><th>代码</th></tr></thead>
+    <tbody>
+      <tr><td>s1 → 识别 → s2</td><td><code>#uploadBox</code> / <code>#sampleBtn</code></td><td>文件必须是 <code>image/*</code></td><td><code>startScan()</code> 2.65s 后 <code>commitScan()</code> + <code>go("s2")</code></td></tr>
+      <tr><td>s2 → s3</td><td><code>#btnToNeeds</code></td><td>店名、单位非空</td><td><code>go("s3", 1)</code>，空值只 toast 不跳转</td></tr>
+      <tr><td>s3 → s4</td><td><code>#btnStart</code></td><td>姓名 1–10 字 + 手机 <code>/^1[3-9]\d{9}$/</code></td><td><code>startInquiry()</code>：建记录、落库、启动 ticker</td></tr>
+      <tr><td>s4 → s5</td><td>计时到点或 <code>#btnSkip</code></td><td>当前在 s4 且有 <code>activeRec</code></td><td><code>finishRun()</code> → <code>completeRecord()</code> → <code>renderResult()</code></td></tr>
+      <tr><td>s4 → s6</td><td><code>#btnWait</code> / 通知方式确认</td><td>有进行中的记录</td><td>记录保持 <code>running</code>，ticker 继续</td></tr>
+      <tr><td>s5 → s3</td><td>无优惠页「调整需求」</td><td><code>scn === "none"</code></td><td><code>data-go="s3"</code>，草稿仍在 <code>state</code></td></tr>
+      <tr><td>s5 → s4</td><td>未接通页「再次尝试」</td><td><code>scn === "fail"</code></td><td><code>#btnRetry</code>：回填条件后 <code>startInquiry()</code> 新建记录</td></tr>
+      <tr><td>s6 → s4 / s5</td><td>点记录卡</td><td>按 <code>status</code> 分流</td><td><code>openRunning()</code> / <code>openResult()</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>注意：</b>这是单页原地切换，没有 URL 路由。浏览器返回键不起作用，页面栈由 <code>go(id, dir)</code> 手工维护。如果要接真实前端框架，这张图就是路由表。</div>
+</section>
+
+<section id="state">
+  <h2><em>06</em>状态流转与数据模型</h2>
+  <p>最容易误读的一点：<strong>记录的状态只有两个</strong>——<code>running</code> 和 <code>done</code>。「已取得优惠 / 商家无优惠 / 未接通」不是三个状态，而是 <code>scn</code> 标签，在发起询价时确定，决定结果卡文案和按钮。</p>
+  <figure>
+    <svg viewBox="0 0 680 418" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>砍价记录状态机</title>
+      <desc>询价记录从草稿、进行中到完成的转换，含取消、重试与调整需求的回退路径。</desc>
+      <defs>
+        <marker id="f3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#B7A794" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <style>
+        .sn{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:13px;font-weight:600;fill:#2B2521}
+        .ss{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:11px;font-weight:400;fill:#6F6152}
+        .sk{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:11px;font-weight:400;fill:#8C7F70}
+        .se{stroke:#B7A794;stroke-width:1.2;fill:none;marker-end:url(#f3)}
+        .sd{stroke:#B7A794;stroke-width:1;stroke-dasharray:4 4;fill:none;marker-end:url(#f3)}
+      </style>
+      <text class="sk" x="40" y="32" dominant-baseline="central">蓝 = 进行中 · 绿 = 已完成 · 灰虚线 = 已取消或旁路</text>
+      <rect x="40" y="120" width="120" height="56" rx="8" fill="#F3EDE2" stroke="#B7A794" stroke-width="0.8"/>
+      <text class="sn" x="100" y="140" text-anchor="middle" dominant-baseline="central">Idle</text>
+      <text class="ss" x="100" y="158" text-anchor="middle" dominant-baseline="central">没有进行中的单</text>
+      <path class="se" d="M160 148 L192 148"/>
+      <text class="sk" x="176" y="134" text-anchor="middle" dominant-baseline="central">上传</text>
+      <rect x="200" y="120" width="130" height="56" rx="8" fill="#F3EDE2" stroke="#B7A794" stroke-width="0.8"/>
+      <text class="sn" x="265" y="140" text-anchor="middle" dominant-baseline="central">Draft 草稿</text>
+      <text class="ss" x="265" y="158" text-anchor="middle" dominant-baseline="central">未落库，内存 state</text>
+      <path class="se" d="M330 148 L362 148"/>
+      <text class="sk" x="346" y="134" text-anchor="middle" dominant-baseline="central">提交</text>
+      <rect x="370" y="120" width="130" height="56" rx="8" fill="#EAF1F7" stroke="#8FB0CB" stroke-width="0.8"/>
+      <text class="sn" x="435" y="140" text-anchor="middle" dominant-baseline="central">Running</text>
+      <text class="ss" x="435" y="158" text-anchor="middle" dominant-baseline="central">到点结算，可刷新恢复</text>
+      <path class="se" d="M500 148 L522 148 L522 108 L537 108"/>
+      <path class="se" d="M500 148 L537 172"/>
+      <path class="se" d="M500 148 L522 148 L522 236 L537 236"/>
+      <rect x="545" y="84" width="95" height="48" rx="8" fill="#EAF1E0" stroke="#8FA878" stroke-width="0.8"/>
+      <text class="sn" x="592" y="102" text-anchor="middle" dominant-baseline="central">win</text>
+      <text class="ss" x="592" y="119" text-anchor="middle" dominant-baseline="central">已取得优惠</text>
+      <rect x="545" y="148" width="95" height="48" rx="8" fill="#EAF1E0" stroke="#8FA878" stroke-width="0.8"/>
+      <text class="sn" x="592" y="166" text-anchor="middle" dominant-baseline="central">none</text>
+      <text class="ss" x="592" y="183" text-anchor="middle" dominant-baseline="central">商家无优惠</text>
+      <rect x="545" y="212" width="95" height="48" rx="8" fill="#FBEDE2" stroke="#CB9068" stroke-width="0.8"/>
+      <text class="sn" x="592" y="230" text-anchor="middle" dominant-baseline="central">fail</text>
+      <text class="ss" x="592" y="247" text-anchor="middle" dominant-baseline="central">未接通</text>
+      <text class="sk" x="537" y="70" dominant-baseline="central">到点 → done</text>
+      <path class="sd" d="M400 176 L400 226 L265 226 L265 246"/>
+      <text class="sk" x="410" y="238" dominant-baseline="central">取消：双击确认</text>
+      <text class="sk" x="410" y="254" dominant-baseline="central">删记录回 s3</text>
+      <rect x="200" y="250" width="130" height="50" rx="8" fill="none" stroke="#B7A794" stroke-width="0.8" stroke-dasharray="3 3"/>
+      <text class="sn" x="265" y="268" text-anchor="middle" dominant-baseline="central" fill="#6F6152">Canceled</text>
+      <text class="ss" x="265" y="285" text-anchor="middle" dominant-baseline="central">需求保留，记录不留</text>
+      <path class="sd" d="M640 172 L655 172 L655 66 L265 66 L265 116"/>
+      <text class="sk" x="448" y="56" dominant-baseline="central">none：调整需求，回到确认需求</text>
+      <path class="sd" d="M592 260 L592 330 L520 330 L520 190 L504 190"/>
+      <text class="sk" x="392" y="346" dominant-baseline="central">fail：再次尝试，同条件新建一条记录</text>
+      <text class="sk" x="40" y="380" dominant-baseline="central">status 只有 running / done 两个值；win / none / fail 是 scn 标签，决定结果卡文案与按钮。</text>
+      <text class="sk" x="40" y="398" dominant-baseline="central">启动时 resumeRunning() 会给到期记录补结算，刷新不会丢结果。</text>
+    </svg>
+    <figcaption>图 3　记录状态机。Done 是终态，但可派生两条新路径：无优惠回到草稿改需求，未接通以同条件新建一条记录。</figcaption>
+  </figure>
+
+  <h3>三个数据结构</h3>
+  <table>
+    <thead><tr><th>对象</th><th>存放</th><th>关键字段</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>state</code> 草稿</td>
+        <td>内存，未落库</td>
+        <td><code>scenario</code>, <code>store</code>, <code>unit</code>, <code>price</code>, <code>list</code>, <code>fields[{l,v}]</code>, <code>needs[]</code>, <code>contact{name,phone}</code>, <code>shotURL</code></td>
+      </tr>
+      <tr>
+        <td><code>rec</code> 记录</td>
+        <td><code>kanjia.records.v2</code></td>
+        <td><code>id</code>, <code>cat</code>, <code>store</code>, <code>unit</code>, <code>price</code>, <code>wx</code>, <code>fields</code>, <code>needs</code>, <code>meta</code>, <code>scn</code>, <code>status</code>, <code>startedAt</code>, <code>durationMs</code>, <code>notify</code>, <code>notifyVia</code>, <code>contact</code>, <code>time</code>, <code>res</code>, <code>finishedAt</code></td>
+      </tr>
+      <tr>
+        <td><code>CATS[cat]</code> 配置</td>
+        <td>代码常量</td>
+        <td><code>store</code>, <code>unit</code>, <code>price</code>, <code>list</code>, <code>ratio</code>, <code>merchant</code>, <code>tel</code>, <code>wx</code>, <code>fields</code>, <code>missing</code>, <code>needsDefault</code>, <code>ask</code>, <code>ava</code>, <code>step2</code>, <code>winBenefit</code>, <code>winExtra</code>, <code>rule</code>, <code>noneReason</code>, <code>noneFree</code>, <code>labels</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <p><code>rec.res</code> 是结算时生成的<strong>快照</strong>：<code>{pill, pillText, head, price, old, tag, note, rowsTitle, rows[], extra, warn}</code>。结果页只读快照，不再重算，这样历史记录不会因为改了配置而变样。</p>
+  <div class="warnbox"><b>面试/评审常问：</b>为什么不把 win / none / fail 做成三个状态？因为它们不是生命周期阶段，而是同一次结算的三种结果标签；状态机只需要关心「是否还在跑」。分开做会导致状态爆炸（running-win、running-none…）。</div>
+</section>
+
+<section id="impl">
+  <h2><em>07</em>关键实现</h2>
+
+  <h3>1. 进度是时间轴，不是定时器堆叠</h3>
+  <p>没有用一串 <code>setTimeout</code> 推进 UI，而是只用一个 250ms 的 ticker，每次用 <code>elapsed = Date.now() - startedAt</code> 去查当前阶段。这一步决定了三件事：可以中断、可以刷新恢复、可以「跳到结果」。</p>
+  <pre><code>const RUN_MS = { win: 56000, none: 56000, fail: 26000 };
+
+function phaseAt(el, scn) {
+  const ph = PHASES[scn];
+  let cur = ph[0];
+  for (const p of ph) if (el >= p.at) cur = p;
+  return cur;   // { done:[], run:2, call:"通话中", meta:"已接通" }
+}</code></pre>
+  <p>每个阶段声明「哪些步骤已完成、当前在跑第几步、状态条文案、是否显示声波」，渲染时按这份声明刷 class，不累积状态。</p>
+
+  <h3>2. 异步与恢复</h3>
+  <ul>
+    <li><b>离开</b>：「等会来看」「有结果了通知我」都只改 <code>notify</code> 并跳到 s6，记录仍是 <code>running</code>，ticker 不停。</li>
+    <li><b>刷新</b>：<code>resumeRunning()</code> 遍历记录，把 <code>durationMs - elapsed</code> 作为剩余时间重新挂 <code>setTimeout</code>；已经过期的用 <code>completeIfDue()</code> 立即结算。</li>
+    <li><b>结算</b>：<code>finishRun()</code> 只有在 <code>activeRec</code> 存在时生效；如果用户已经离开 s4，结算后只更新记录、弹通知条，不强行跳页。</li>
+  </ul>
+  <pre><code>function finishRun() {
+  const rec = activeRec;
+  if (!rec) return;
+  stopTicker();
+  activeRec = null;
+  completeRecord(rec);          // status = done, res = buildResult(rec)
+  save();
+  if (isCurrent("s4")) { renderResult(rec); go("s5", 1); return; }
+  renderRecords();
+  if (rec.notifyVia && rec.notifyVia !== "inapp") showPush(rec);
+}</code></pre>
+
+  <h3>3. 话术是模板参数化，不是每个品类手写</h3>
+  <p><code>talkFor(rec)</code> 取 <code>CATS[rec.cat]</code> 的字段，加 <code>rec.price</code> 算出的成交价，拼出三段模板（win / none / fail）。五个步骤对应五组对话，每一步的台词都带品类自己的口径：KTV 问包型和最低消费，酒吧问卡座和开瓶费。</p>
+  <p>成交那段最后两句是微信留资，只有 win 才有：</p>
+  <pre><code>{ k: "ai", t: "16:54:33", x: "那我加一下您的" + c.wx.type + "，把确认的信息发过去…" },
+{ k: "mer", t: "16:54:46", x: "行，" + c.wx.type + "搜 " + c.wx.id + "，加的时候备注一下。" }</code></pre>
+
+  <h3>4. 议价与结果口径</h3>
+  <table>
+    <thead><tr><th>项</th><th>规则</th><th>代码</th></tr></thead>
+    <tbody>
+      <tr><td>目标价</td><td><code>round(price × ratio)</code>，<code>ratio</code> 全品类统一 0.85</td><td><code>dealOf()</code></td></tr>
+      <tr><td>展示区间</td><td>目标价 – 标价，标注「按标价低 15%」</td><td><code>renderConfirm()</code> 的 <code>.ptarget</code></td></tr>
+      <tr><td>成功页价格</td><td>只显示成交总价，单位作分母</td><td><code>buildResult()</code> → <code>rows[0]</code></td></tr>
+      <tr><td>差额与降幅</td><td>由结算时重算，避免和话术不一致</td><td><code>save = P - D</code>, <code>pct</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>5. 微信留资的呈现</h3>
+  <p>配置在品类上（<code>CATS[cat].wx = {type, id, who, note}</code>），发起询价时快照进 <code>rec.wx</code>，结果页由 <code>wxBlock(rec)</code> 渲染，且只在 <code>scn === "win"</code> 时插入。复制走 <code>navigator.clipboard</code>，失败降级到 <code>execCommand</code>，再失败提示手动添加。</p>
+
+  <h3>6. 联系人与表单校验</h3>
+  <ul>
+    <li>首次询价必须填姓名（1–10 字）和手机号（<code>^1[3-9]\d{9}$</code>），否则「开始询价」按钮禁用。</li>
+    <li>提交后写入 <code>kanjia.contact.v1</code>，之后只显示脱敏号码（<code>138****1234</code>）和「修改」。</li>
+    <li>换手机号、换人代订时才需要点「修改」，避免每次重复填。</li>
+  </ul>
+</section>
+
+<section id="extend">
+  <h2><em>08</em>扩展指南：加一个品类</h2>
+  <p>整套渲染逻辑不认识「KTV」或「酒吧」，只认识字段。加品类是纯配置工作：</p>
+  <ol>
+    <li>在 <code>app.js</code> 的 <code>CATS</code> 里加一份配置（约 35 行），必须包含 <code>id / name / store / unit / price / list / ratio / merchant / tel / wx</code>。</li>
+    <li>写该品类的 <code>fields</code>（可编辑字段）与 <code>missing</code>（截图里通常没有、需要当场问的项）。</li>
+    <li>写三套结果文案：<code>winBenefit / winExtra / rule</code>、<code>noneReason / noneBenefit / noneFree</code>，以及 <code>labels</code> 里的三个字段名。</li>
+    <li>如果是休闲品类，把 id 加进 <code>LEISURE</code> 数组，换品类弹层会自动多一项。</li>
+  </ol>
+  <p>不需要动的：首页渲染、字段增删改、询价时间轴、结果卡、记录卡、分享。这些都由 <code>CATS</code> 驱动。</p>
+  <pre><code>// 最小可用配置示例
+teahouse: {
+  id: "teahouse", name: "茶馆", short: "门店",
+  store: "示例茶馆（三里屯店）",
+  unit: "1 壶", price: 288, list: 368, ratio: 0.85,
+  merchant: "前台", tel: "010-0000 0000",
+  wx: { type: "微信", id: "example-tea", who: "店长 · 陈", note: "10:00–22:00" },
+  fields: [{ l: "茶位", v: "4 人" }, { l: "茶种", v: "岩茶" }],
+  missing: ["能否续水", "包间最低消费"],
+  needsDefault: ["送茶点", "免茶位费"],
+  ask: "四位，想坐包间，能不能送茶点",
+  ava: "包间下午还有",
+  step2: "茶点可以送一份",
+  winBenefit: "包间 · 送茶点",
+  winTail: "还免了茶位费",
+  winExtra: "茶位费已免（原 ¥40/位）",
+  rule: "周末 14:00 后可用",
+  noneReason: "周末包间紧，价格不动",
+  noneBenefit: "包间 · 含茶点",
+  noneFree: ["送一份茶点", "可延到 15:00 到店"],
+  labels: { quote: "门店报价", benefit: "包间与权益", rule: "使用规则" }
+}</code></pre>
+  <div class="note"><b>别忘了：</b>识别层目前是写死的（<code>commitScan()</code> 直接读 <code>CAT</code> 配置）。新品类要能演示，要么给它一张 <code>sample</code> 图，要么依赖 <code>sampleFor()</code> 现场生成一张 SVG 团购卡。</div>
+</section>
+
+<section id="limits">
+  <h2><em>09</em>已知限制与上线前必须补的</h2>
+  <p>这份列表要主动讲，不要等人问。原型最容易被误判成「已经能用」。</p>
+  <table>
+    <thead><tr><th>现状</th><th>影响</th><th>真要上线要做什么</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>识别是假的</b>：<code>commitScan()</code> 直接把配置里的示例门店写进 <code>state</code></td>
+        <td>用户上传自己的截图，识别结果仍是秋果酒店 / 星聚会 KTV，图文对不上</td>
+        <td>接截图理解（OCR + 结构化抽取），输出必须带置信度与原文位置，低置信字段留空待确认</td>
+      </tr>
+      <tr>
+        <td><b>通话是模板</b>：<code>talkFor()</code> 拼固定台词，没有真实外呼</td>
+        <td>商家侧的应答、拒绝、临时变价都无法处理</td>
+        <td>外呼 + ASR/TTS，或人工议价众包；至少要能处理「我要问一下」「这个价做不了」</td>
+      </tr>
+      <tr>
+        <td><b>微信是配置数据</b>：<code>CATS[].wx</code> 预先写死</td>
+        <td>真实场景必须由商家当场给出，不能预设</td>
+        <td>从通话中提取 + 二次确认；商家身份要有校验（企业微信主体、门店号）</td>
+      </tr>
+      <tr>
+        <td><b>没有后端</b>：记录只在 localStorage</td>
+        <td>换设备、清缓存即丢失；无法多端同步</td>
+        <td>账号体系 + 服务端记录；至少要有任务状态机与幂等重试</td>
+      </tr>
+      <tr>
+        <td><b>没有删除入口</b></td>
+        <td>演示数据会一直堆在记录页</td>
+        <td>左滑删除或长按菜单；删除要同步清理运行中的定时器</td>
+      </tr>
+      <tr>
+        <td><b>分享是占位</b>：三个渠道都只 toast</td>
+        <td>无法验证分享转化</td>
+        <td>Web Share API / 生成结果长图 / 带参链接</td>
+      </tr>
+      <tr>
+        <td><b>没有路由</b>：刷新后停在首页</td>
+        <td>分享链接无法直达某条结果</td>
+        <td>hash 路由或 <code>/?r=id</code>，配合记录恢复</td>
+      </tr>
+      <tr>
+        <td><b>通知是页面提示条</b></td>
+        <td>不真的发短信或服务通知</td>
+        <td>短信通道 + 模板报备；微信服务号模板消息</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>合规与信任</h3>
+  <ul>
+    <li>代客通话需要告知商家「正在为客人询价」，并按当地要求处理录音与告知。</li>
+    <li>价格承诺目前是口头的，商家到店不认账没有约束力；可靠的做法是让商家在微信里回一句确认，形成文字记录。</li>
+    <li>结果卡必须保留「信息仅供参考，需以商家最终确认和实际预订为准」，且不得出现支付成功、订单号。</li>
+    <li>医美等医疗品类不接：不能承诺疗效、不能打「最低价」，代客议价本身也有争议。</li>
+  </ul>
+</section>
+
+<footer>
+  <p>文档对应代码版本：commit <code>c59aa1d</code>（议价成功后收取商家微信）。<br>
+  文件结构：<code>index.html</code> 页面骨架 · <code>app.css</code> 样式 · <code>app.js</code> 配置与引擎 · <code>samples/</code> 示例截图 · <code>docs/</code> 本说明。</p>
+  <p>三张图均按 <code>app.js</code> 实际逻辑绘制，不是理想化流程。若代码变更，请同步修改本文件中的图与「入口条件」表。</p>
+</footer>
+
+</div>
+</body>
+</html>

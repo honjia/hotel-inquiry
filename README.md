@@ -14,6 +14,8 @@ https://honjia.github.io/hotel-inquiry/
 
 也可以下载后双击 `index.html` 打开——纯静态，不用联网，不用装任何东西。
 
+**技术说明与设计图纸**：[docs/project-guide.html](docs/project-guide.html)——完整项目介绍，含业务流程图、页面跳转图、状态机，以及数据模型、关键实现、扩展指南和已知限制。单文件，可直接发给开发同学。
+
 ---
 
 ## 品类
@@ -104,6 +106,7 @@ index.html   页面骨架
 app.css      样式（含小屏适配：窄于 460px 时去掉手机外框，铺满全屏）
 app.js       品类配置 + 渲染引擎
 samples/     酒店示例截图
+docs/        项目说明与设计图纸（project-guide.html）
 ```
 
 加一个新品类的成本：在 `app.js` 的 `CATS` 里加约 30 行配置（单位、字段、可谈权益、话术、三种结局文案），列表页自动出现，不用动渲染逻辑。
