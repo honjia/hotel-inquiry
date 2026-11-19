@@ -31,6 +31,7 @@
       store: "秋果酒店（北京三里屯太古里团结湖地铁站店）",
       unit: "1 间夜", price: 661, list: 966, ratio: 0.85,
       merchant: "前台", tel: "010-8532 6688",
+      wx: { type: "企业微信", id: "qiuguo-slt", who: "前台 · 李经理", note: "工作日 9:00–22:00 在线" },
       sample: "samples/shot-price.jpg",
       uploadTitle: "上传酒店报价截图",
       uploadSub: "OTA 详情页 / 订单页 / 商家聊天报价",
@@ -64,6 +65,7 @@
       store: "星聚会 KTV（三里屯店）",
       unit: "4 小时", price: 1480, list: 1880, ratio: 0.85,
       merchant: "前台", tel: "010-6416 8866",
+      wx: { type: "微信", id: "xjh_slt_azhe", who: "订房 · 阿哲", note: "每天 14:00–次日 1:00 在线" },
       uploadTitle: "上传 KTV 团购截图",
       uploadSub: "团购页 / 套餐详情 / 门店聊天报价",
       hints: ["门店全称与分店", "包型，以及可用时段", "套餐价，含不含酒水", "开台费、能否自带酒水"],
@@ -96,6 +98,7 @@
       store: "足间道 · 足疗（国贸店）",
       unit: "2 人次", price: 796, list: 916, ratio: 0.85,
       merchant: "门店", tel: "010-5900 2233",
+      wx: { type: "企业微信", id: "zjd-guomao", who: "门店客服 · 小周", note: "10:00–23:00 在线" },
       uploadTitle: "上传按摩足疗团购截图",
       uploadSub: "团购页 / 项目详情 / 门店聊天报价",
       hints: ["门店全称与分店", "项目名与时长", "单价，以及是否含服务费", "能否指定技师、加钟价格"],
@@ -128,6 +131,7 @@
       store: "OLD LIVE 酒馆（三里屯店）",
       unit: "1 卡座", price: 3000, list: 3600, ratio: 0.85,
       merchant: "订台", tel: "010-6417 5522",
+      wx: { type: "微信", id: "oldlive_kiko", who: "订台 · Kiko", note: "17:00–次日 2:00 在线" },
       uploadTitle: "上传酒吧卡座报价截图",
       uploadSub: "订台页 / 套餐详情 / 销售聊天报价",
       hints: ["门店全称与分店", "卡座类型与日期", "低消金额，含不含酒水", "入场费、开瓶费、周末加价"],
@@ -160,6 +164,7 @@
       store: "超级猩猩（国贸店）",
       unit: "12 次", price: 2388, list: 2988, ratio: 0.85,
       merchant: "会籍顾问", tel: "010-8532 1177",
+      wx: { type: "企业微信", id: "sm-gm-chen", who: "会籍顾问 · 陈教练", note: "10:00–21:00 在线" },
       uploadTitle: "上传健身卡报价截图",
       uploadSub: "会员页 / 卡种详情 / 顾问聊天报价",
       hints: ["门店全称与分店", "卡种与次数", "有效期、能否转卡", "含不含体测和私教"],
@@ -192,6 +197,7 @@
       store: "汤泉良子（望京店）",
       unit: "2 人次", price: 516, list: 636, ratio: 0.85,
       merchant: "前台", tel: "010-8471 9900",
+      wx: { type: "企业微信", id: "tqlz-wangjing", who: "前台 · 王姐", note: "全天在线，凌晨回复较慢" },
       uploadTitle: "上传洗浴门票截图",
       uploadSub: "团购页 / 门票详情 / 门店聊天报价",
       hints: ["门店全称与分店", "门票类型与人数", "含不含餐和搓澡", "过夜是否加钱"],
@@ -655,14 +661,15 @@
     return cur;
   }
 
-  function buildSteps() {
+  function buildSteps(scn) {
     const c = CAT;
+    const s = scn || state.scenario;
     const defs = [
       { t: "整理需求", sub: "已从截图整理条件 " + (state.fields.length + 2) + " 项" },
       { t: "联系" + (c.id === "hotel" ? "酒店" : "门店"), sub: c.merchant + " · " + c.tel },
       { t: "确认条件与权益", sub: c.winBenefit },
       { t: "询问优惠", sub: c.labels.quote + " · 当场可付" },
-      { t: "整理结果", sub: "已生成结果卡" }
+      { t: "整理结果", sub: s === "win" ? "已生成结果卡 · 已收商家微信" : "已生成结果卡" }
     ];
     $("#steps").innerHTML = defs.map((s, i) =>
       '<div class="step" data-i="' + i + '" data-state="">' +
@@ -696,10 +703,13 @@
          { k: "mer", t: "16:53:52", x: "稍等，我算一下。" },
          { k: "sys", t: "16:53:53", x: "商家查询中 · 等待 18 秒" },
          { k: "mer", t: "16:54:11", x: D + "，" + c.winBenefit + "。" },
-         { k: "ai", t: "16:54:19", x: "确认一下：" + D + " 是 " + u + " 的总价、" + c.winBenefit + "、" + c.rule + "，对吗？" },
-         { k: "mer", t: "16:54:27", x: "对。这个价留到今晚 8 点。" }],
-        [{ k: "sys", t: "16:54:34", x: "已记录商家口头承诺，价格有效期今天 20:00" },
-         { k: "sys", t: "16:54:36", x: "已生成结果卡" }]
+         { k: "ai", t: "16:54:19", x: "确认一下：" + D + " 是" + u + "的总价、" + c.winBenefit + "、" + c.rule + "，对吗？" },
+         { k: "mer", t: "16:54:27", x: "对。这个价留到今晚 8 点。" },
+         { k: "ai", t: "16:54:33", x: "那我加一下您的" + c.wx.type + "，把确认的信息发过去，客人到店前再跟您对一次。" },
+         { k: "mer", t: "16:54:46", x: "行，" + c.wx.type + "搜 " + c.wx.id + "，加的时候备注一下。" }],
+        [{ k: "sys", t: "16:54:52", x: "已记录商家口头承诺，价格有效期今天 20:00" },
+         { k: "sys", t: "16:54:55", x: "已获取商家" + c.wx.type + " · " + c.wx.id },
+         { k: "sys", t: "16:54:57", x: "已生成结果卡" }]
       ],
       none: [
         [{ k: "sys", t: "16:51:44", x: "已从截图提取 " + (rec.fields.length + 2) + " 项信息" },
@@ -803,6 +813,7 @@
       store: state.store,
       unit: state.unit,
       price: state.price,
+      wx: CAT.wx ? { type: CAT.wx.type, id: CAT.wx.id, who: CAT.wx.who, note: CAT.wx.note } : null,
       fields: state.fields.map((f) => ({ l: f.l, v: f.v })),
       needs: CAT.needsDefault.slice(),
       meta: summarize(),
@@ -827,7 +838,7 @@
     if (state.contact.name && state.contact.phone) persistContact(state.contact);
     editingContact = false;
 
-    buildSteps();
+    buildSteps(scn);
     $("#progName").textContent = rec.store;
     $("#progTel").textContent = CATS[rec.cat].tel + " · " + CATS[rec.cat].merchant;
     paintProgress(0, scn);
@@ -857,6 +868,51 @@
   /* =========================================================
      结果
      ========================================================= */
+  function copyText(txt, label) {
+    const done = () => toast((label || "内容") + "已复制");
+    const fallback = () => {
+      const ta = document.createElement("textarea");
+      ta.value = txt;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      ok ? done() : toast("复制失败，请手动添加：" + txt);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done, fallback);
+    } else fallback();
+  }
+
+  /* 议价成功才有：商家留下的微信 / 企业微信 */
+  function wxBlock(rec) {
+    const c = CATS[rec.cat] || CATS.hotel;
+    const w = rec.wx || c.wx;
+    if (!w) return "";
+    const person = (rec.contact && rec.contact.name) || "本人";
+    return '<div class="sec-h row-h"><span>商家联系方式</span><em>已同意添加</em></div>' +
+      '<div class="wxcard">' +
+        '<div class="wx-head">' +
+          '<span class="wx-ic">' + (w.type === "企业微信" ? "企" : "微") + "</span>" +
+          '<div class="wx-hmain">' +
+            '<div class="wx-t">' + esc(w.type) + " · " + esc(w.who) + "</div>" +
+            '<div class="wx-sub">' + esc(rec.store) + "</div>" +
+          "</div>" +
+        "</div>" +
+        '<div class="wx-idrow">' +
+          '<div class="wx-idbox"><span class="wx-k">微信号</span><b>' + esc(w.id) + "</b></div>" +
+          '<button class="wx-copy" data-copy="' + esc(w.id) + '" data-copy-label="微信号">复制</button>' +
+        "</div>" +
+        '<div class="wx-line"><span class="wx-k">门店电话</span><b>' + esc(c.tel) + "</b>" +
+          '<button class="wx-mini" data-copy="' + esc(c.tel.replace(/\s/g, "")) + '" data-copy-label="电话">复制</button></div>' +
+        '<div class="wx-line"><span class="wx-k">添加备注</span><b>砍价 · ' + esc(person) + "</b></div>" +
+        (w.note ? '<div class="wx-note">' + esc(w.note) + " · 联系方式由商家本人提供，助理不代你付款。</div>" : "") +
+      "</div>";
+  }
+
   function buildResult(rec) {
     const c = CATS[rec.cat];
     const P = rec.price;
@@ -942,6 +998,8 @@
       ? '<div class="warn" style="margin-top:14px"><span class="ex">!</span><div><div class="wb" style="margin-top:0">' + d.warn + "</div></div></div>"
       : "";
 
+    const wxHTML = rec.scn === "win" ? wxBlock(rec) : "";
+
     $("#resultBody").innerHTML =
       '<div class="hero">' +
         '<span class="pill ' + d.pill + '">' + d.pillText + "</span>" +
@@ -955,7 +1013,7 @@
           '<div class="row"><span class="rk">' + r[0] + '</span><span class="rv' +
           (r[0].indexOf("差异") > -1 ? " strong" : "") + '">' + r[1] + "</span></div>"
         ).join("") +
-      "</div>" + extraHTML + warnHTML +
+      "</div>" + extraHTML + wxHTML + warnHTML +
       '<div class="disc">信息仅供参考，需以商家最终确认和实际预订为准<br>助理未代你下单或付款</div>' +
       '<div class="next-h">下一步，由你决定</div><div style="height:4px"></div>';
 
@@ -1095,7 +1153,7 @@
     state.store = r.store; state.unit = r.unit; state.price = r.price;
     state.fields = r.fields.map((f) => ({ l: f.l, v: f.v }));
     state.needs = r.needs.slice();
-    buildSteps();
+    buildSteps(r.scn);
     $("#progName").textContent = r.store;
     $("#progTel").textContent = CAT.tel + " · " + CAT.merchant;
     paintProgress(Date.now() - r.startedAt, r.scn);
@@ -1236,7 +1294,7 @@
     const c = CATS[rec.cat];
     let html = '<div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-bottom:14px">' +
       "通话对象：" + esc(rec.store) + " · " + c.merchant + " " + c.tel + "<br>" +
-      "发起时间：今天 16:52 · " + (rec.scn === "fail" ? "拨打 2 次，均未接通" : "通话时长 2 分 11 秒") + "</div>";
+      "发起时间：今天 16:52 · " + (rec.scn === "fail" ? "拨打 2 次，均未接通" : "通话时长 2 分 49 秒") + "</div>";
     [0, 1, 2, 3, 4].forEach(function (i) {
       const list = scn[i];
       if (!list || !list.length) return;
@@ -1329,6 +1387,8 @@
   }
 
   document.addEventListener("click", function (e) {
+    const cp = e.target.closest("[data-copy]");
+    if (cp) { copyText(cp.dataset.copy, cp.dataset.copyLabel); return; }
     const t = e.target.closest("[data-go]");
     if (t) { go(t.dataset.go, parseInt(t.dataset.dir || "1", 10)); return; }
     const tab = e.target.closest(".tab");
